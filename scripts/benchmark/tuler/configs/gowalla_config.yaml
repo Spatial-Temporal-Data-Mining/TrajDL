@@ -1,0 +1,57 @@
+model:
+  class_path: trajdl.algorithms.tuler.TULER
+  init_args:
+    tokenizer:
+      class_path: trajdl.tokenizers.locseq.LocSeqTokenizer.load_pretrained
+      init_args:
+        path: output/gowalla/tokenizer.pkl
+    num_users: 201
+    embedding_dim: 250
+    hidden_dim: 300
+    rnn_type: gru
+    num_layers: 1
+    dropout: 0.5
+    embedding_path: output/gowalla/word2vec.model
+    freeze_embedding: True
+    bidirectional: False
+
+data:
+  class_path: trajdl.datasets.modules.tuler.TULERDataModule
+  init_args:
+    tokenizer:
+      class_path: trajdl.tokenizers.locseq.LocSeqTokenizer.load_pretrained
+      init_args:
+        path: output/gowalla/tokenizer.pkl
+    train_parquet_path: output/gowalla/train_ds.parquet
+    val_parquet_path: output/gowalla/test_ds.parquet
+    train_batch_size: 1
+    val_batch_size: 256
+    num_cpus: -1
+    user_map: output/gowalla/user_map.pkl
+
+seed_everything: 42
+
+optimizer:
+  class_path: torch.optim.Adam
+  init_args:
+    lr: 5e-4
+
+trainer:
+  default_root_dir: output/gowalla/
+  max_epochs: 1000
+  precision: 32-true
+  gradient_clip_val: 0.1
+  plugins:
+    - class_path: lightning.pytorch.plugins.io.AsyncCheckpointIO
+  callbacks:
+    - class_path: lightning.pytorch.callbacks.EarlyStopping
+      init_args:
+        monitor: val_loss
+        mode: min
+        patience: 10
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        save_top_k: 10
+        monitor: val_loss
+        mode: min
+        filename: model-{epoch:03d}-{val_loss:.6f}

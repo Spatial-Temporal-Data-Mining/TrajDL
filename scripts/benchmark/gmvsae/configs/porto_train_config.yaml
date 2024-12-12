@@ -1,0 +1,10 @@
+model:
+  embedding_dim: 32
+  hidden_size: 256
+  mem_num: 10
+  tokenizer: output/porto/tokenizer.pkl
+  mode: train
+  init_mu_c_pretrained_path: output/porto/pretrained_init_mu_c.npy
+
+trainer:
+  default_root_dir: output/porto/train

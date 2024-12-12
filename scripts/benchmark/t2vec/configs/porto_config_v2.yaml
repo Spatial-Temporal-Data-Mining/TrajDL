@@ -1,0 +1,57 @@
+model:
+  embedding_dim: 256
+  hidden_size: 256
+  tokenizer:
+    class_path: trajdl.tokenizers.t2vec.T2VECTokenizer.load_pretrained
+    init_args:
+      path: /root/trajdl_benchmark/t2vec/tokenizer.pkl
+  knn_indices_path: /root/trajdl_benchmark/t2vec/knn_indices.npy
+  knn_distances_path: /root/trajdl_benchmark/t2vec/knn_distances.npy
+  num_layers: 3
+  bidirectional_encoder: true
+  embedding_path: /root/trajdl_benchmark/t2vec/word2vec.model
+  dropout: 0.2
+  freeze_embedding: True
+
+data:
+  tokenizer:
+    class_path: trajdl.tokenizers.t2vec.T2VECTokenizer.load_pretrained
+    init_args:
+      path: /root/trajdl_benchmark/t2vec/tokenizer.pkl
+  train_parquet_path: /root/trajdl_benchmark/t2vec/train_ds.parquet
+  val_parquet_path: /root/trajdl_benchmark/t2vec/val_ds.parquet
+  test_parquet_path: /root/trajdl_benchmark/t2vec/test_ds.parquet
+  train_batch_size: 50
+  val_batch_size: 256
+  num_cpus: -1
+  num_train_batches: 1000
+  num_val_batches: 1000
+  k: 5
+
+seed_everything: 42
+
+optimizer:
+  class_path: torch.optim.AdamW
+  init_args:
+    lr: 5e-6
+
+trainer:
+  default_root_dir: /root/trajdl_benchmark/lightning_logs/t2vec
+  max_epochs: 1000
+  precision: 32-true
+  gradient_clip_val: 0.1
+  gradient_clip_algorithm: norm
+  plugins:
+    - class_path: lightning.pytorch.plugins.io.AsyncCheckpointIO
+  callbacks:
+    - class_path: lightning.pytorch.callbacks.EarlyStopping
+      init_args:
+        monitor: val_loss
+        mode: min
+        patience: 20
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        save_top_k: 20
+        monitor: val_loss
+        mode: min
+        filename: model-{epoch:03d}-{val_loss:.6f}

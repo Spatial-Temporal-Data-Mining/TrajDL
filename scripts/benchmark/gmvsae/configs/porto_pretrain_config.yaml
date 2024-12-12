@@ -1,0 +1,9 @@
+model:
+  embedding_dim: 32
+  hidden_size: 256
+  mem_num: 10
+  tokenizer: output/porto/tokenizer.pkl
+  mode: pretrain
+
+trainer:
+  default_root_dir: output/porto/pretrain

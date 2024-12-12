@@ -1,0 +1,91 @@
+[build-system]
+requires = ["scikit-build-core", "pybind11"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "trajdl"
+description = "A python deep learning package for trajectory data mining."
+readme = "README.md"
+version = "0.1.0.dev1"
+license.file = "LICENSE"
+authors = [
+  { name = "Chao Song", email = "davidchaosong@outlook.com" },
+  { name = "Chaoqun Feng", email = "fengchaoqun.fcq@gmail.com" },
+]
+maintainers = [
+  { name = "Chao Song", email = "davidchaosong@outlook.com" },
+  { name = "Chaoqun Feng", email = "fengchaoqun.fcq@gmail.com" },
+]
+requires-python = ">=3.8"
+
+dependencies = [
+  "scikit-learn>=1.3.2",
+  "gensim==4.3.3",
+  "polars==1.6.0",
+  "orjson>=3.10.6",
+  "joblib>=1.4.0",
+  "tqdm>=4.66.4",
+  "lightning[extra]>=2.3.3",
+  "pyarrow>=17.0.0",
+  "torch_tb_profiler>=0.4.3",
+  "tensorboard>=2.14.0",
+  "rtree>=1.3.0",
+  "requests>=2.31.0",
+  "mmh3>=5.0.1",
+  "numpy>=1.24.0,<2.0.0",
+]
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: Data Analysis",
+  "Topic :: Scientific/Engineering :: Mathematics",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Scientists",
+  "Framework :: PyTorch",
+]
+
+[project.urls]
+Homepage = "https://TODO"
+Documentation = "https://TODO"
+"Bug Tracker" = "https://TODO"
+Discussions = "https://TODO"
+Changelog = "https://TODO"
+
+[project.optional-dependencies]
+dev = [
+  "pybind11==2.13.1",
+  "pytest>=8.3.2",
+  "pytest-cov>=5.0.0",
+  "build>=1.2.1",
+  "isort==5.13.2",
+  "black[jupyter]==24.8.0",
+  "autoflake==2.3.1",
+  "requests-mock==1.12.1",
+  "mypy>=1.13.0",
+]
+docs = [
+  "jupyter>=1.1.1",
+  "jupytext>=1.16.4",
+  "jupyterlab_myst>=2.4.2",
+  "ipywidgets>=8.1.5",
+  "recommonmark>=0.7.1",
+  "furo>=2024.8.6",
+  "sphinx>=8.0.2",
+  "sphinx-markdown-tables>=0.0.17",
+  "myst-nb>=1.1.2",
+  "sphinx-design>=0.6.1",
+  "sphinx-book-theme>=1.1.3",
+  "sphinx-copybutton>=0.5.2",
+]
+
+# pytest configuration
+[tool.pytest.ini_options]
+addopts = "-p no:warnings --cov=trajdl --cov-report html --durations=10"
