@@ -19,6 +19,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional, Union
 
+from tqdm import tqdm
 import pandas as pd
 import polars as pl
 import pyarrow as pa
@@ -321,26 +322,41 @@ class PortoDataset(OpenSourceDataset):
             unzip_file(train_csv_zip_path, tmp_folder)
             csv_path = os.path.join(tmp_folder, "train.csv")
 
-            (
-                pl.read_csv(
-                    csv_path,
-                    schema={
-                        "TRIP_ID": pl.String,
-                        "CALL_TYPE": pl.String,
-                        "ORIGIN_CALL": pl.Int64,
-                        "ORIGIN_STAND": pl.Int64,
-                        "TAXI_ID": pl.Int64,
-                        "TIMESTAMP": pl.Int64,
-                        "DAY_TYPE": pl.String,
-                        "MISSING_DATA": pl.Boolean,
-                        "POLYLINE": pl.String,
-                    },
-                )
-                .with_columns(
-                    pl.col("POLYLINE")
-                    .str.json_decode(dtype=pl.List(pl.List(pl.Float64)))
-                    .cast(pl.List(pl.Array(pl.Float64, 2)))
-                    .alias("POLYLINE")
-                )
-                .write_parquet(self.cache_path, use_pyarrow=True)
+            with open(csv_path, 'r') as f:
+                line_count = sum(1 for _ in f)  # 计算行数
+            print(f"num records: {line_count}")
+
+            progress_bar = tqdm(total=line_count)
+
+            reader = pl.read_csv_batched(
+                csv_path,
+                schema_overrides={
+                    "TRIP_ID": pl.String,
+                    "CALL_TYPE": pl.String,
+                    "ORIGIN_CALL": pl.Int64,
+                    "ORIGIN_STAND": pl.Int64,
+                    "TAXI_ID": pl.Int64,
+                    "TIMESTAMP": pl.Int64,
+                    "DAY_TYPE": pl.String,
+                    "MISSING_DATA": pl.Boolean,
+                    "POLYLINE": pl.String,
+                },
             )
+
+            new_df = []
+            batches = reader.next_batches(10)
+            while batches:
+                new_df.append(
+                    pl.concat(batches)
+                    .with_columns(
+                        pl.col("POLYLINE")
+                        .str.json_decode(dtype=pl.List(pl.List(pl.Float64)))
+                        .cast(pl.List(pl.Array(pl.Float64, 2)))
+                        .alias("POLYLINE")
+                    )
+                )
+                progress_bar.update(new_df[-1].shape[0])
+                batches = reader.next_batches(10)
+            pl.concat(new_df).write_parquet(self.cache_path, use_pyarrow=True)
+
+            progress_bar.close()
