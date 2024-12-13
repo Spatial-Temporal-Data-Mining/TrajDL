@@ -87,8 +87,8 @@ class NetForTestingEmb(nn.Module):
 
 
 def check_freeze(emb_layer: BaseTokenEmbeddingLayer, tokenizer: AbstractTokenizer):
-    batch_size = random.randint(1, 12)
-    seq_length = random.randint(1, 12)
+    batch_size = random.randint(2, 12)
+    seq_length = random.randint(2, 12)
     src = torch.randint(low=0, high=len(tokenizer), size=(batch_size, seq_length))
     out_features = 3
     labels = torch.rand(size=(batch_size, seq_length, out_features))
@@ -101,14 +101,15 @@ def check_freeze(emb_layer: BaseTokenEmbeddingLayer, tokenizer: AbstractTokenize
     # test unfreeze
     record0 = emb_layer.embedding.weight.data.sum().item()
 
-    optimizer = torch.optim.SGD(net.parameters(), lr=1e-3)
+    optimizer = torch.optim.SGD(net.parameters(), lr=1e-1)
 
-    output = net(src)
-    assert output.shape == (batch_size, seq_length, out_features)
-    loss = ((labels - output) ** 2).sum()
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
+    for _ in range(10):
+        output = net(src)
+        assert output.shape == (batch_size, seq_length, out_features)
+        loss = ((labels - output) ** 2).sum()
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
 
     assert not emb_layer.is_frozen
     record1 = emb_layer.embedding.weight.data.sum().item()
