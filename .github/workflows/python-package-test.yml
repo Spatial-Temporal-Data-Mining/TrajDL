@@ -34,7 +34,7 @@ jobs:
         python -m pip install torch --index-url https://download.pytorch.org/whl/cpu --no-cache-dir
     - name: Install dependencies from pyproject.toml
       run: |
-        python -m pip install .
+        python -m pip install .[dev,docs]
     - name: Test with pytest
       run: |
         pytest
