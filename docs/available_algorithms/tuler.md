@@ -8,7 +8,7 @@
 
 理解人类的轨迹模式在许多*基于位置的社交网络*（Location-based Social Networks，**LBSNs**）应用中是一项重要任务，比如个性化推荐和基于偏好的路径规划。
 
-```{figure} ../_static/images/gowalla_trajectories.jpg
+```{figure} ../_static/images/tuler_gowalla_trajectories.jpg.jpg
 :alt: Gowalla数据集中的轨迹序列示例
 :align: center
 :width: 400px
