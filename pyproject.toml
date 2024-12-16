@@ -3,7 +3,7 @@ requires = ["scikit-build-core", "pybind11"]
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "TrajDL"
+name = "trajdl"
 description = "A python deep learning toolbox for trajectory data mining."
 readme = "README.md"
 version = "0.1.0.dev1"
