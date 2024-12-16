@@ -129,9 +129,7 @@ def check_freeze(emb_layer: BaseTokenEmbeddingLayer, tokenizer: AbstractTokenize
         loss = ((labels - output) ** 2).sum()
         optimizer.zero_grad()
         loss.backward()
-
         torch.nn.utils.clip_grad_value_(net.parameters(), clip_value=0.1)
-
         optimizer.step()
 
     record2 = emb_layer.embedding.weight.data.sum().item()
@@ -142,12 +140,14 @@ def check_freeze(emb_layer: BaseTokenEmbeddingLayer, tokenizer: AbstractTokenize
     emb_layer.unfreeze_parameters()
     assert not emb_layer.is_frozen
 
-    output = net(src)
-    assert output.shape == (batch_size, seq_length, out_features)
-    loss = ((labels - output) ** 2).sum()
-    optimizer.zero_grad()
-    loss.backward()
-    optimizer.step()
+    for _ in range(10):
+        output = net(src)
+        assert output.shape == (batch_size, seq_length, out_features)
+        loss = ((labels - output) ** 2).sum()
+        optimizer.zero_grad()
+        loss.backward()
+        torch.nn.utils.clip_grad_value_(net.parameters(), clip_value=0.1)
+        optimizer.step()
 
     record3 = emb_layer.embedding.weight.data.sum().item()
 
