@@ -97,27 +97,21 @@ def check_freeze(emb_layer: BaseTokenEmbeddingLayer, tokenizer: AbstractTokenize
     assert output.shape == (batch_size, seq_length, emb_layer.embedding_dim)
 
     net = NetForTestingEmb(emb_layer=emb_layer, out_features=out_features)
-
-    # test unfreeze
-    record0 = emb_layer.embedding.weight.data.sum().item()
-
     optimizer = torch.optim.SGD(net.parameters(), lr=1e-2)
 
+    # test unfreeze
     for _ in range(10):
         output = net(src)
         assert output.shape == (batch_size, seq_length, out_features)
         loss = ((labels - output) ** 2).sum()
         optimizer.zero_grad()
         loss.backward()
-
         torch.nn.utils.clip_grad_value_(net.parameters(), clip_value=0.1)
-        
         optimizer.step()
 
     assert not emb_layer.is_frozen
-    record1 = emb_layer.embedding.weight.data.sum().item()
-
-    assert record0 != record1
+    for param in net.emb.parameters():
+        assert param.requires_grad is True
 
     # test freeze
     emb_layer.freeze_parameters()
@@ -132,9 +126,8 @@ def check_freeze(emb_layer: BaseTokenEmbeddingLayer, tokenizer: AbstractTokenize
         torch.nn.utils.clip_grad_value_(net.parameters(), clip_value=0.1)
         optimizer.step()
 
-    record2 = emb_layer.embedding.weight.data.sum().item()
-
-    assert record1 == record2
+    for param in net.emb.parameters():
+        assert param.requires_grad is False
 
     # test unfreeze
     emb_layer.unfreeze_parameters()
@@ -149,9 +142,8 @@ def check_freeze(emb_layer: BaseTokenEmbeddingLayer, tokenizer: AbstractTokenize
         torch.nn.utils.clip_grad_value_(net.parameters(), clip_value=0.1)
         optimizer.step()
 
-    record3 = emb_layer.embedding.weight.data.sum().item()
-
-    assert record2 != record3
+    for param in net.emb.parameters():
+        assert param.requires_grad is True
 
 
 def test_simple_embedding(t2vec_tokenizer: T2VECTokenizer):
