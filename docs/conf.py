@@ -27,6 +27,7 @@
 
 import os
 import sys
+import toml
 
 from sphinx.application import Sphinx
 
@@ -35,10 +36,12 @@ sys.path.insert(0, os.path.abspath("."))
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "TrajDL"
+pyproject = toml.load("../pyproject.toml")
+
+project = pyproject["project"]["name"]
 copyright = "2024, All authors of TrajDL"
-author = "Chao Song, Chaoqun Feng"
-release = "0.1.0.dev1"
+author = ", ".join(author["name"] for author in pyproject["project"]["authors"])
+release = pyproject["project"]["version"]
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
