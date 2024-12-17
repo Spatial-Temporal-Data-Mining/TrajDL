@@ -7,6 +7,8 @@ build:
   jobs:
     pre_install:
       - pip install torch --index-url https://download.pytorch.org/whl/cpu
+    pre_build:
+      - pytest -s
 
 python:
   install:
