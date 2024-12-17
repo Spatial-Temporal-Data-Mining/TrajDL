@@ -8,6 +8,8 @@ build:
 python:
   install:
     - method: pip
+      args: install torch --index-url https://download.pytorch.org/whl/cpu
+    - method: pip
       path: .
       extra_requirements:
         - docs
