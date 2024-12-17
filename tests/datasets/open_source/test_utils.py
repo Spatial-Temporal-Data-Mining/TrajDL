@@ -19,7 +19,14 @@ import zipfile
 from io import StringIO
 from unittest.mock import patch
 
-from trajdl.datasets.open_source.utils import decompress_gz, remove_path, unzip_file
+import pytest
+
+from trajdl.datasets.open_source.utils import (
+    decompress_gz,
+    download_file,
+    remove_path,
+    unzip_file,
+)
 
 
 def test_decompress_gz(tmp_path):
@@ -56,6 +63,33 @@ def test_unzip_file(tmp_path):
         content = f.read()
 
     assert content == "Hello, World!"
+
+
+def test_download_file(requests_mock, tmp_path):
+    url = "http://test.com"
+    content = b"data"
+    requests_mock.get(url, content=content)
+
+    file_path = tmp_path / "test_file"
+
+    download_file(url, str(file_path))
+
+    assert file_path.exists()
+    with open(file_path, "rb") as f:
+        content = f.read()
+    assert content == content
+
+
+def test_download_file_timeout(requests_mock, tmp_path):
+    url = "http://test.com"
+    requests_mock.get(url, status_code=404)
+
+    file_path = tmp_path / "test_file"
+
+    with pytest.raises(
+        RuntimeError, match="Downloading dataset failed! Check your network."
+    ):
+        download_file(url, str(file_path))
 
 
 def test_remove_path_file(tmp_path):

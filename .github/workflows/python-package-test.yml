@@ -37,7 +37,10 @@ jobs:
         python -m pip install .[dev,docs]
     - name: Test with pytest
       run: |
-        pytest
+        autoflake -j 0 --remove-all-unused-imports --in-place --recursive --ignore-init-module-imports .
+        isort -j -1 .
+        black .
+        pytest -s
     - name: Build docs
       run: |
         cd docs && make -j 4 html

@@ -54,11 +54,11 @@ class OpenSourceDataset(ABC):
     -------
     check_original_dataset(path: str) -> bool
         Validates the downloaded dataset.
-    download(chunk_size) -> str
+    download(chunk_size: int = 8192) -> str
         Downloads the dataset if it does not exist or is invalid.
     load_cache(table: pa.Table, return_as: str = "pl") -> Union[pl.DataFrame, pd.DataFrame, pa.Table]
         Loads the cached dataset in the specified format.
-    load(return_as: str = "pl") -> Union[pl.DataFrame, pd.DataFrame, pa.Table]
+    load(return_as: str = "pl", chunk_size: int = 8192) -> Union[pl.DataFrame, pd.DataFrame, pa.Table]
         Loads the dataset, attempting to use the cache first.
     cache()
         Abstract method to be implemented by subclasses for caching behavior.
@@ -138,7 +138,7 @@ class OpenSourceDataset(ABC):
         else:
             return False
 
-    def download(self) -> str:
+    def download(self, chunk_size: int = 8192) -> str:
         """Download the dataset.
 
         The dataset is downloaded to the CACHE_DATASET_DIR. The path is determined by the dataset name.
@@ -155,7 +155,7 @@ class OpenSourceDataset(ABC):
         """
         if not self.check_original_dataset(self.path):
             print(f"Dataset will be downloaded from {self.url}")
-            download_file(self.url, self.path)
+            download_file(self.url, self.path, chunk_size=chunk_size)
 
             if self.check_original_dataset(self.path):
                 print(f"Dataset has been downloaded as {self.path}")
@@ -197,6 +197,7 @@ class OpenSourceDataset(ABC):
     def load(
         self,
         return_as: str = "pl",
+        chunk_size: int = 8192,
         original_dataset_path: Optional[str] = None,
         unsafe: bool = False,
     ) -> Union[pl.DataFrame, pd.DataFrame, pa.Table]:
@@ -209,6 +210,8 @@ class OpenSourceDataset(ABC):
         ----------
         return_as : str, optional
             The format to return (default is 'pl').
+        chunk_size : int, optional
+            The size of each loading chunk (default is 8192).
         original_dataset_path: Optional[str], optional
             The path of the original dataset downloaded by user (default is None).
         unsafe: bool, optional
@@ -338,11 +341,10 @@ class PortoDataset(OpenSourceDataset):
                     "MISSING_DATA": pl.Boolean,
                     "POLYLINE": pl.String,
                 },
-                batch_size=10000,
             )
 
             new_df = []
-            batches = reader.next_batches(5)
+            batches = reader.next_batches(10)
             while batches:
                 new_df.append(
                     pl.concat(batches).with_columns(
@@ -353,8 +355,7 @@ class PortoDataset(OpenSourceDataset):
                     )
                 )
                 progress_bar.update(new_df[-1].shape[0])
-                batches = reader.next_batches(5)
+                batches = reader.next_batches(10)
+            pl.concat(new_df).write_parquet(self.cache_path, use_pyarrow=True)
 
             progress_bar.close()
-
-            pl.concat(new_df).write_parquet(self.cache_path, use_pyarrow=True)
