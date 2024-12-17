@@ -216,7 +216,7 @@ $$
 s(t_{\leq i+1})=1 -  \underset{c}{\operatorname{argmax}} \exp[\frac{\log p_\theta(t_{\leq i}|\mu_c)p_\theta(t_{i+1}|t_{\leq i},\mu_c)}{i+1}]
 $$ (online_detection_1)
 
-## 代码实战
+## 代码示例
 
 我们以`Notebook`的形式，使用`TrajDL`实现了GM-VSAE算法的训练和推理，参见[GM-VSAE代码实践](../examples/gmvsae_example.md)。
 

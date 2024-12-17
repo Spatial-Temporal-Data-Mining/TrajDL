@@ -171,7 +171,7 @@ $$ (optimization)
 
 显然，该优化目标能够转换为*交叉熵*（cross entropy）的计算，在此不做赘述。
 
-## 代码实践
+## 代码示例
 
 我们以`Notebook`的形式，使用`TrajDL`实现了ST-LSTM的训练和推理，参见[ST-LSTM代码实践](../examples/stlstm_example.md)。
 

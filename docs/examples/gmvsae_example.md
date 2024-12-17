@@ -11,7 +11,6 @@ kernelspec:
   name: python3
 ---
 
-
 # GMVSAE
 
 在本节内容中，我们主要是介绍使用`TrajDL`来进行轨迹序列异常检测，并且针对GM-VSAE中的部分公式进行代码细节讲解。本节内容如下：
@@ -23,9 +22,9 @@ kernelspec:
 
 ## 数据预处理
 
-在GM-VSAE中使用的数据集依旧是前文所介绍过的[Porto数据集](../data/open_source_dataset.md),该数据集是从出租车上采集到的波尔多市出租车轨迹数据集。下面我们基于`TrajDL`中的网格系统来将原始的经纬度点序列转换为网格位置序列。
+在GM-VSAE中使用的数据集依旧是前文所介绍过的[Porto数据集](../data/open_source_dataset.md)，该数据集是从出租车上采集到的波尔多市出租车轨迹数据集。下面我们基于`TrajDL`中的网格系统将原始的经纬度点序列转换为网格位置序列。
 
-先使用`TrajDL`中封装的`traj_cpp`包来构建网格系统，这里我们使用了``SimpleGridSystem``来进行封装，``SimpleGridSystem``继承了``BaseGridSystem``，读者也可以使用该基类来封装自己的数据集。
+这里我们使用了`SimpleGridSystem`构建网格系统，使用`RectangleBoundary`构建区域。
 
 ```{code-cell} ipython3
 from trajdl import trajdl_cpp
@@ -45,73 +44,66 @@ grid = SimpleGridSystem(
     step_x=lng_size,
     step_y=lat_size,
 )
-print("Grid Size: ", len(grid))
+print("Grid Size:", len(grid))
 ```
 
 ```{note}
 注意，此处使用的坐标系统为基于原始经纬度的坐标系统，并非[T2VEC](./t2vec_example.md)中使用的墨卡托坐标系统。
 ```
 
-下面使用`TrajDL`中的开源数据集接口`PortoDataset`来加载Porto数据集，并将轨迹点序列`Trajecotory`转换为位置序列`LocSeq`。
+下面使用`TrajDL`中的公开数据集接口`PortoDataset`来加载Porto数据集，并将轨迹点序列`Trajecotory`转换为位置序列`LocSeq`。
 
 ```{code-cell} ipython3
+from collections import defaultdict
+
 import polars as pl
+from tqdm.notebook import tqdm
+from tqdm.contrib import tenumerate
+from trajdl.datasets import LocSeq
 from trajdl.datasets.open_source.conf import PortoDataset
+
 
 # 定义最短和最长的序列长度
 shortest, longest = 20, 1200
 
-# 加载Porto数据集并以pl.DataFrame的数据类型返回
-trajectories = (
-    PortoDataset()
-    .load(return_as="pl")
-    .select("POLYLINE")
-    .filter(
-        (pl.col("POLYLINE").list.len() >= shortest)
-        & (pl.col("POLYLINE").list.len() <= longest)
-    )["POLYLINE"]
-    .limit(100000)
-)
-print(len(trajectories), trajectories[0])
-```
-
-```{code-cell} ipython3
-from joblib import Parallel, delayed
-from tqdm.contrib import tenumerate
-from trajdl.datasets import LocSeq
-
-
-# 定义一个np.ndarray类型的轨迹点序列转换为LocSeq位置序列的函数
-def transform_traj_into_loc_seq(traj_np, idx):
-    # 检测该序列是否所有点都在波尔多市的网格系统中
-    # in_boundary_np是在trajdl_cpp中实现
-    if grid.in_boundary_np(traj_np).all():
-        return LocSeq(grid.locate_unsafe_np(traj_np), entity_id=str(idx))
-    return None
-
-
-# 并行将pl.DataFrame类型的原始序列转化为位置序列
-locseq_generator = Parallel(n_jobs=-1, return_as="generator_unordered")(
-    delayed(transform_traj_into_loc_seq)(traj_pl.to_numpy(), idx)
-    for idx, traj_pl in tenumerate(
-        trajectories, desc="transform trajectories into location sequences"
+def generate_od_map(shortest: int, longest: int):
+    # 加载Porto数据集并以pl.DataFrame的数据类型返回
+    trajectories = (
+        PortoDataset()
+        .load(return_as="pl")
+        .select("POLYLINE")
+        .filter(
+            (pl.col("POLYLINE").list.len() >= shortest)
+            & (pl.col("POLYLINE").list.len() <= longest)
+        )["POLYLINE"]
+        .limit(100000)
     )
-)
+    print(len(trajectories), trajectories[0])
+
+    # 定义一个np.ndarray类型的轨迹点序列转换为LocSeq位置序列的函数
+    def transform_traj_into_loc_seq(traj_np, idx):
+        # 检测该序列是否所有点都在波尔多市的网格系统中
+        if grid.in_boundary_np(traj_np).all():
+            return LocSeq(grid.locate_unsafe_np(traj_np), entity_id=str(idx))
+        return None
+
+    # 基于OD构建一个dict，key是OD pair，values是位置序列组成的list
+    od_agg = defaultdict(list)
+    for idx, traj_pl in tenumerate(trajectories, desc="transform trajectories into location sequences"):
+        # 将pl.DataFrame类型的原始序列转化为位置序列
+        loc_seq = transform_traj_into_loc_seq(traj_pl.to_numpy(), idx)
+        if loc_seq:
+            od_agg[(loc_seq.o, loc_seq.d)].append(loc_seq)
+
+    return od_agg
+
+
+od_agg = generate_od_map(shortest, longest)
 ```
 
 下面开始统计属于同一对起点和终点的轨迹序列数量，也即论文中的”固定行程“，并且划分训练集和验证集。划分的逻辑是，先统计有多少"起点-终点(OD)"的路程，然后统计每个路程中有多少条轨迹，过滤掉小于25条轨迹的路程。然后从每一条路程中，选择最后的5条序列作为验证集，其余的序列作为训练集。
 
 ```{code-cell} ipython3
-from collections import defaultdict
-
-from tqdm.notebook import tqdm
-
-od_agg = defaultdict(list)
-
-for loc_seq in locseq_generator:
-    if loc_seq:
-        od_agg[(loc_seq.o, loc_seq.d)].append(loc_seq)
-
 # 划分训练和验证集
 min_od_traj_num = 10
 test_traj_num = 5
@@ -137,7 +129,7 @@ from trajdl.datasets import LocSeqDataset
 def generate_dataset(loc_seqs, nums):
     sample_idx = np.random.choice(
         list(range(len(loc_seqs))), size=nums, replace=False
-    ).tolist()
+    )
     loc_samples = [loc_seqs[i] for i in sample_idx]
     return LocSeqDataset.init_from_loc_seqs(loc_samples)
 
@@ -244,7 +236,6 @@ train_dataloader = data_module.train_dataloader()
 next(iter(train_dataloader))
 ```
 
-
 ## GM-VASE模型
 
 使用`TrajDL`中的`GMVSAE`快速构建模型：
@@ -263,7 +254,6 @@ model = GMVSAE(
 )
 model
 ```
-
 
 ## 训练
 
@@ -298,6 +288,7 @@ predictions
 ```
 
 使用下面的代码来计算AUC的值：
+
 ```{code-cell} ipython3
 from sklearn.metrics import auc, precision_recall_curve
 
@@ -330,9 +321,7 @@ for od, traj_indices in tqdm(od_agg.items()):
 np.mean(list(od_auc.values()))
 ```
 
-
 ```{tip}
 1. 本文介绍了GM-VSAE中数据预处理的方式。
 2. 本文介绍了使用`TrajDL`搭建GM-VSAE模块并开展实验。
 ```
-

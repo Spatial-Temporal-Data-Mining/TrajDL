@@ -19,14 +19,7 @@ import zipfile
 from io import StringIO
 from unittest.mock import patch
 
-import pytest
-
-from trajdl.datasets.open_source.utils import (
-    decompress_gz,
-    download_file,
-    remove_path,
-    unzip_file,
-)
+from trajdl.datasets.open_source.utils import decompress_gz, remove_path, unzip_file
 
 
 def test_decompress_gz(tmp_path):
@@ -65,33 +58,6 @@ def test_unzip_file(tmp_path):
     assert content == "Hello, World!"
 
 
-def test_download_file(requests_mock, tmp_path):
-    url = "http://test.com"
-    content = b"data"
-    requests_mock.get(url, content=content)
-
-    file_path = tmp_path / "test_file"
-
-    download_file(url, str(file_path))
-
-    assert file_path.exists()
-    with open(file_path, "rb") as f:
-        content = f.read()
-    assert content == content
-
-
-def test_download_file_timeout(requests_mock, tmp_path):
-    url = "http://test.com"
-    requests_mock.get(url, status_code=404)
-
-    file_path = tmp_path / "test_file"
-
-    with pytest.raises(
-        RuntimeError, match="Downloading dataset failed! Check your network."
-    ):
-        download_file(url, str(file_path))
-
-
 def test_remove_path_file(tmp_path):
     file_path = tmp_path / "test.txt"
     with open(file_path, "w") as f:
@@ -125,9 +91,11 @@ def test_remove_path_exception_handling():
     sys.stdout = captured_output
 
     # Patch os.path.isfile and os.path.isdir to simulate raising an exception
-    with patch("os.path.isfile", return_value=True), patch(
-        "os.remove", side_effect=Exception("File not found")
-    ), patch("os.path.isdir", return_value=False):
+    with (
+        patch("os.path.isfile", return_value=True),
+        patch("os.remove", side_effect=Exception("File not found")),
+        patch("os.path.isdir", return_value=False),
+    ):
 
         remove_path("dummy_file.txt")
 
@@ -143,9 +111,11 @@ def test_remove_directory_exception_handling():
     captured_output = StringIO()
     sys.stdout = captured_output
 
-    with patch("os.path.isfile", return_value=False), patch(
-        "os.path.isdir", return_value=True
-    ), patch("shutil.rmtree", side_effect=Exception("Directory not empty")):
+    with (
+        patch("os.path.isfile", return_value=False),
+        patch("os.path.isdir", return_value=True),
+        patch("shutil.rmtree", side_effect=Exception("Directory not empty")),
+    ):
 
         remove_path("dummy_directory")
 

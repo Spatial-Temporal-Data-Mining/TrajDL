@@ -17,8 +17,7 @@ import os
 import shutil
 import zipfile
 
-import requests
-from tqdm import tqdm
+from .downloader import FileDownloader
 
 
 def decompress_gz(gz_path: str, output_path: str) -> None:
@@ -50,7 +49,7 @@ def unzip_file(zip_file_path: str, output_folder: str) -> None:
         zip_ref.extractall(output_folder)
 
 
-def download_file(url: str, path: str, chunk_size: int = 8192) -> None:
+def download_file(url: str, path: str) -> None:
     """Download a file from a URL.
 
     Parameters
@@ -59,27 +58,13 @@ def download_file(url: str, path: str, chunk_size: int = 8192) -> None:
         The URL to download the file from.
     path : str
         The path where the downloaded file will be saved.
-    chunk_size : int, optional
-        The size of each download chunk (default is 8192).
 
     Raises
     ------
     RuntimeError
         If the download fails for any reason.
     """
-    with requests.get(url, stream=True) as response:
-        if response.status_code == 200:
-            total_size = int(response.headers.get("content-length", 0))
-            with open(path, "wb") as f:
-                for chunk in tqdm(
-                    response.iter_content(chunk_size=chunk_size),
-                    total=total_size // chunk_size,
-                    unit="chunks",
-                    desc="Downloading dataset...",
-                ):
-                    f.write(chunk)
-        else:
-            raise RuntimeError("Downloading dataset failed! Check your network.")
+    FileDownloader().download(url, path)
 
 
 def remove_path(path):

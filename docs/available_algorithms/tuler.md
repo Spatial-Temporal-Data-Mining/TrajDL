@@ -139,11 +139,11 @@ $$ (output_layer)
 该模块的输出是$|c|$个类别的概率，概率最大的类别$c_{\max}$即为最终分类的结果。显然，对于该分类问题的优化使用*交叉熵*（cross entropy）作为损失函数即可。
 
 ```{note}
-这里$\mathrm{softmax}$由于类别的数量过于庞大导致计算很慢，可以参考[Candidate Sampling算法](https://www.tensorflow.org/extras/candidate_sampling.pdf)来解决这个问题。`TrajDL`后续会在TULER上支持该优化算法。
+这里$\mathrm{softmax}$由于类别的数量过于庞大导致计算很慢，可以参考[Candidate Sampling算法](https://www.tensorflow.org/extras/candidate_sampling.pdf)来解决这个问题。`TrajDL`后续会在TULER上支持该算法。
 ```
 
 
-## 代码实战
+## 代码示例
 
 我们以`Notebook`的形式，使用`TrajDL`中的API实现了TULER算法在Gowalla数据集上的训练和推理，参见[Quick Start](../getting_started/QuickStart.md)。
 

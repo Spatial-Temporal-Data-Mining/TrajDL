@@ -104,7 +104,7 @@ print(len(train_traj), len(val_traj), len(test_traj))
 
 因此，在`TrajDL`中我们提供了`GridSystem`网格系统的API，读者使用该API可直接建立一套用于经纬度点转网格的系统，将连续的经纬度点离散化为网格（网格即为`token`）。另外，`GridSystem`底层封装了`C++`编写的`trajdl_cpp`工具来优化计算，详细的介绍参见[网格系统](../tools/grid.md)。
 
-波尔多市的地图如[图1](#porto-map)所示，出租车轨迹序列的经纬度点分布于图中的红色框部分，我们将会把红色框中的地图按照$100m \times 100m$为一个网格来进行切分构建网格系统。
+波尔多市的地图如[图1](#porto-map)所示，我们按照$100m \times 100m$为一个网格将地图进行切分，以此构建网格系统。
 
 ```{figure} ../_static/images/porto_google_map.jpg
 :alt: Porto Map
@@ -141,7 +141,9 @@ print(f"boundary: {boundary}")
 print(trajdl_cpp.convert_gps_to_webmercator(-8.690261, 41.140092))
 print(trajdl_cpp.convert_gps_to_webmercator(0, 0))
 ```
+
 可以看到经纬度坐标$(0,0)$对应墨卡托投影系统中的坐标原点$(0,0)$。下面我们在墨卡托系统中对波尔多市的地图进行网格系统的构建，一个网格单元的大小是$100m \times 100m$
+
 ```{code-cell} ipython3
 from trajdl.grid import SimpleGridSystem
 
@@ -159,6 +161,7 @@ print(len(grid), grid.num_x_grids, grid.num_y_grids)
 ```
 
 给定一个波尔多市的经纬度，即可映射到`SimpleGridSystem`中的一个网格`token`
+
 ```{code-cell} ipython3
 # 转墨卡托坐标系统
 web_mercator_location = trajdl_cpp.convert_gps_to_webmercator(-8.610291, 41.140746)
@@ -194,6 +197,7 @@ tokenizer = T2VECTokenizer.build(
 tokenizer.save_pretrained(os.path.join(output_folder, "tokenizer.pkl"))
 print("num vocab: ", len(tokenizer))
 ```
+
 在这里，解释一下`min_freq`和`with_kd_tree`这两个参数的意义：
 
 * `Tokenizer`构建的词表越大，那么其后续的计算量越大复杂度越高，所以希望能够用最小的词表来表示整个数据集，所以在此处，就有`min_freq`这个参数来限制，当某个词元出现的频率小于`min_freq`的时候，`Tokenizer`会剔除掉该词元，以此方式来平衡词表的大小和词表的信息量。
@@ -244,15 +248,12 @@ np.save(os.path.join(output_folder, "knn_indices.npy"), V)  # 保存k近邻网�
 np.save(os.path.join(output_folder, "knn_distances.npy"), D)  # 保留k近邻网格的距离
 ```
 
-
 ## 训练和推理
 
-`TrajDL`中训练框架是基于`PytorchLightning`框架编写的，典型的模块比如数据模块`T2VECDataModule`是继承自`LightningDataModule`、模型模块`T2VEC`是基于`LightningModule`模块编写的，用户可以通过短短几行代码，调用`TrajDL`中的`API`进行训练和推理。
-
-另外，`TrajDL`中的训练和推理的方式还利用了`LightningAI`框架，该框架既支持以命令行参数传入的方式训练，又支持以`YAML`配置文件的方式来训练。
+`TrajDL`中训练环节是基于`Lightning`框架编写的，典型的模块比如数据模块`T2VECDataModule`是继承自`LightningDataModule`、模型模块`T2VEC`是基于`LightningModule`模块编写的，用户可以通过简单几行代码，调用`TrajDL`中的`API`进行训练和推理。
 
 ```{tip}
-读者如果想对`LightningAI`有更进一步的了解，可以参见[LightningCLI](../training/lightning_cli.md)。
+另外，`Lightning`框架还提供了命令行和配置文件的方式进行模型训练与验证。读者如果想对`Lightning`的命令行与配置文件有进一步的了解，可以阅读[LightningCLI](../training/lightning_cli.md)。
 ```
 
 此处，我们仅展示使用`API`的方式来进行`T2VEC`模型的训练和推理。
@@ -363,4 +364,3 @@ print(euclidean_distances(batch_vec_1, batch_vec_2))
 1. 介绍了如果使用`TrajDL`中的`API`来进行T2VEC中数据集、tokenizer和增强样本的构建。
 2. 基于`TrajDL`快速开展T2VEC的训练和推理。
 ```
-

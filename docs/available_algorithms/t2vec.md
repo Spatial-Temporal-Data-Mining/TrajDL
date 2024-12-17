@@ -10,7 +10,7 @@
   1. 时间复杂度$O(n^2)$
   2. 针对*非均匀*（non-uniformity）、*低采样率*（low sampling rate）以及*带噪声*（noisy）的轨迹序列效果不佳
 
-因此，作者提出了基于seq2seq模型的深度学习方法**T2VEC**（**t**rajectory **to** **v**ectory），旨在学习高质量的*轨迹嵌入表示*（trajectory embedding）以应对上述难点。该篇论文有如下贡献：
+因此，作者提出了基于seq2seq模型的深度学习方法**T2VEC**（**t**rajectory **to** **v**ector），旨在学习高质量的*轨迹嵌入表示*（trajectory embedding）以应对上述难点。该篇论文有如下贡献：
 
   1. 在没有样本标签的情况下，通过序列样本增强的方式来构建学习样本。
   2. 基于空间近邻的先验，对*噪声对比估计损失*（noise contrastive estimation）的正标签采样进行改进，提出了*空间近邻感知损失*（spatial proximity aware loss）
@@ -206,7 +206,7 @@ $$ (nce_canidate_set)
 ```
 
 
-## 实战示例
+## 代码示例
 
 我们以`Notebook`的形式，使用`TrajDL`来实现T2VEC算法在Porto数据集上的训练和推理，参见[T2VEC实践](../examples/t2vec_example.md)。
 
