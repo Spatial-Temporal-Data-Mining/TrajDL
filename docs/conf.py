@@ -38,7 +38,7 @@ sys.path.insert(0, os.path.abspath("."))
 
 pyproject = toml.load("../pyproject.toml")
 
-project = pyproject["project"]["name"]
+project = "TrajDL"
 copyright = "2024, All authors of TrajDL"
 author = ", ".join(author["name"] for author in pyproject["project"]["authors"])
 release = pyproject["project"]["version"]
