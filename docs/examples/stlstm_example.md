@@ -19,7 +19,7 @@ kernelspec:
 * 基于`TrajDL`的`ST-LSTM`模型训练和推理
 
 ```{note}
-`ST-LSTM`作者并未提供源码，`TrajDL`基于论文描述在Pytorch框架下进行了模型和实验的复现。在`TrajDL`中实现了`STLSTM`和`HST-LSTM`的模型部分，但是目前并未实现`HST-LSTM`前向推理部分。
+`ST-LSTM`作者并未提供源码，`TrajDL`基于论文描述在Pytorch框架下进行了模型和实验的复现。在`TrajDL`中实现了`STLSTM`的完整实验流程，`HST-LSTM`会在后续版本中完成。
 ```
 
 
