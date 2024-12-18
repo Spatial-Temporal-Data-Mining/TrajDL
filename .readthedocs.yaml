@@ -1,22 +1,7 @@
 version: 2
-
 build:
   os: "ubuntu-22.04"
   tools:
     python: "3.11"
-  jobs:
-    pre_install:
-      - pip install torch --index-url https://download.pytorch.org/whl/cpu
-    pre_build:
-      - pytest -s
-
-python:
-  install:
-    - method: pip
-      path: .
-      extra_requirements:
-        - docs
-        - dev
-
-sphinx:
-  configuration: docs/conf.py
+  commands:
+    - mv * $READTHEDOCS_OUTPUT/html/
