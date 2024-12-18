@@ -5,4 +5,4 @@ build:
     python: "3.11"
   commands:
     - mkdir -p $READTHEDOCS_OUTPUT/html/
-    - mv * $READTHEDOCS_OUTPUT/html/
+    - mv html/* $READTHEDOCS_OUTPUT/html/
