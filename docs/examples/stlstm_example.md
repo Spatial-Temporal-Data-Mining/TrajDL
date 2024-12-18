@@ -25,7 +25,7 @@ kernelspec:
 
 ## Gowalla数据集预处理
 
-在[Open Source Dataset](../data/open_source_dataset.md)中我们已经介绍了`Gowalla`数据集是一种基于社交网络的签到(Check-in)数据集，原始数据集的每一条记录都是一个位置ID，同时还有该位置ID的经纬度坐标。在[Quick Start](../getting_started/QuickStart.md)中我们已经介绍过如何使用`TrajDL`中的接口来加载`Gowalla`数据集并将其转换为`Trajectory`和`LocSeq`。这些数据预处理的操作在本章中不再赘述。
+在[Open Source Dataset](../data/open_source_dataset.md)中我们已经介绍了`Gowalla`数据集是一种基于社交网络的签到(Check-in)数据集，原始数据集的每一条记录都是一个位置ID，同时还有该位置ID的经纬度坐标。在[Quick Start](../getting_started/quick_start.md)中我们已经介绍过如何使用`TrajDL`中的接口来加载`Gowalla`数据集并将其转换为`Trajectory`和`LocSeq`。这些数据预处理的操作在本章中不再赘述。
 
 在ST-LSTM中，还要额外处理轨迹序列两个相邻位置之间的*时间间隔*（time intervals）和*距离间隔*（distance intervals）。下面将通过代码来介绍如何进行数据的预处理。
 
