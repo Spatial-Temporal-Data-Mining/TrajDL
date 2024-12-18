@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.10", "3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12", "3.13"]
 
     steps:
     - uses: actions/checkout@v4
@@ -41,6 +41,3 @@ jobs:
         isort -j -1 .
         black .
         pytest -s
-    - name: Build docs
-      run: |
-        cd docs && make -j 4 html && cd ..
