@@ -145,7 +145,7 @@ $$ (output_layer)
 
 ## 代码示例
 
-我们以`Notebook`的形式，使用`TrajDL`中的API实现了TULER算法在Gowalla数据集上的训练和推理，参见[Quick Start](../getting_started/QuickStart.md)。
+我们以`Notebook`的形式，使用`TrajDL`中的API实现了TULER算法在Gowalla数据集上的训练和推理，参见[Quick Start](../getting_started/quick_start.md)。
 
 
 ```{tip}
