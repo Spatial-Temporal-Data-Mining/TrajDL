@@ -92,7 +92,7 @@ kernelspec:
 :name: Quick Start
 
 getting_started/installation
-getting_started/QuickStart
+getting_started/quick_start
 ```
 
 ```{toctree}
