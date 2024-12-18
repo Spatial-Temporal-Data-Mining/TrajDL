@@ -43,4 +43,33 @@ jobs:
         pytest -s
     - name: Build docs
       run: |
-        cd docs && make -j 4 html
+        cd docs && make -j 4 html && cd ..
+
+    - name: Get branch name
+      id: branch-name
+      run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
+    - name: Checkout documentation repository
+      uses: actions/checkout@v3
+      with:
+        repository: Spatial-Temporal-Data-Mining/TrajDL-docs
+        token: ${{ secrets.PAT_FOR_DOCS }}
+        path: docs-repo
+        fetch-depth: 0  # 获取所有分支信息
+
+    - name: Deploy to documentation repository
+      run: |
+        cd docs-repo
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        
+        git checkout -b ${{ steps.branch-name.outputs.branch }} || git checkout ${{ steps.branch-name.outputs.branch }}
+
+        # 复制文档
+        rm -rf *  # 清空当前分支内容
+        cp -r ../docs/build/html/* .
+        
+        # 提交更改
+        git add .
+        git commit -m "Update documentation from source repository" || echo "No changes to commit"
+        git push origin ${{ steps.branch-name.outputs.branch }}
