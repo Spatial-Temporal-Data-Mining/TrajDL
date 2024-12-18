@@ -35,6 +35,12 @@ jobs:
     - name: Install dependencies from pyproject.toml
       run: |
         python -m pip install .[dev,docs]
+    - name: Cache datasets
+      id: cache-datasets
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/trajdl
+        key: trajdl-cache-datasets
     - name: Test with pytest
       run: |
         autoflake -j 0 --remove-all-unused-imports --in-place --recursive --ignore-init-module-imports .
