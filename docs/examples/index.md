@@ -7,7 +7,7 @@
 * 轨迹序列异常检测（Trajectory Sequence Anomaly Detection）
 * 下一个位置预测（Next Location Prediction）
 
-其中，用户轨迹链接的的部分参见[Quick Start](../getting_started/QuickStart.md)即可，另外三类任务参见下面的文档。
+其中，用户轨迹链接的的部分参见[Quick Start](../getting_started/quick_start.md)即可，另外三类任务参见下面的文档。
 
 ```{toctree}
 :maxdepth: 1
