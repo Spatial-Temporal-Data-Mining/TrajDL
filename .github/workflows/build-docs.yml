@@ -65,6 +65,7 @@ jobs:
         # 复制文档
         rm -rf *  # 清空当前分支内容
         cp -r ../docs/build/html/* .
+        cp ../.readthedocs.yaml .
         
         # 提交更改
         git add .
