@@ -31,14 +31,14 @@ kernelspec:
 基于Arrow，Pytorch和Lightning
 : `TrajDL`的数据部分构建在`Arrow`之上，模型部分构建在`Pytorch`之上，训练与验证流程构建在`Lightning`之上，充分结合各个框架工具的优势。
 
-包含SOTA模型的复现脚本
-: `TrajDL`提供了SOTA模型的复现脚本，用户可以通过脚本重现论文内的实验结果，部分场景下`TrajDL`具备比论文场景更优的效果。
-
 高效的工具
 : `TrajDL`提供了高效的工具，比如高效的`Dataset`，`Tokenizer`，`GridSystem`。出色的零拷贝特性可以显著降低数据的处理时间，节省内存使用。高效的`Tokenizer`和`GridSystem`可以随时转换数据，无需预先处理数据。
 
 可扩展性
 : `TrajDL`高度模块化，不会约束用户的代码，用户可以随时从`TrajDL`里面取出自己需要使用的工具。`TrajDL`还打通了与`Polars`，`Pandas`，`PyArrow`等工具的接口，用户使用常用的科学计算工具处理后的数据可以轻松导入到`TrajDL`的数据体系。另外`TrajDL`同时支持API与配置文件两种方式开展实验与开发，尽可能提升用户体验。
+
+SOTA模型的实验复现脚本
+: `TrajDL`提供了SOTA模型的复现脚本，用户可以通过脚本重现论文内的实验结果，部分场景下`TrajDL`具备比论文场景更优的效果。
 
 ---
 

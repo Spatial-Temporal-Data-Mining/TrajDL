@@ -75,8 +75,23 @@ exclude_patterns = []
 
 html_theme = "sphinx_book_theme"
 html_static_path = ["_static"]
-# html_logo = "_static/images/trajdl-wide.svg"
-# html_favicon = "_static/images/trajdl-square.svg"
+html_logo = "_static/images/wide-logo.svg"
+html_favicon = "_static/images/favicon.ico"
+
+html_theme_options = {
+    "logo": {
+        "alt_text": "TrajDL documentation - Home",
+    },
+    "github_url": "https://github.com/Spatial-Temporal-Data-Mining/TrajDL",
+    "repository_url": "https://github.com/Spatial-Temporal-Data-Mining/TrajDL",
+    "repository_branch": "main",
+    "path_to_docs": "docs",
+    "show_navbar_depth": 1,
+    "use_edit_page_button": True,
+    "use_repository_button": True,
+    "use_download_button": True,
+    "navigation_with_keys": False,
+}
 
 
 def setup(app: Sphinx):
