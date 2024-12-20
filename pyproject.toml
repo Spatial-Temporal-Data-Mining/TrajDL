@@ -4,9 +4,9 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "trajdl"
-description = "A python deep learning toolbox for trajectory data mining."
+description = "A python toolbox for Trajectory Deep Learning."
 readme = "README.md"
-version = "0.1.0.dev1"
+version = "0.1.0"
 license.file = "LICENSE"
 authors = [
   { name = "Chao Song", email = "davidchaosong@outlook.com" },
@@ -36,24 +36,23 @@ dependencies = [
 ]
 
 classifiers = [
-  "Programming Language :: Python :: 3",
+  "Development Status :: 5 - Production/Stable",
+  "Programming Language :: C++",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "License :: OSI Approved :: Apache Software License",
-  "Operating System :: OS Independent",
+  "Operating System :: POSIX :: Linux",
   "Topic :: Scientific/Engineering :: Artificial Intelligence",
-  "Topic :: Scientific/Engineering :: Data Analysis",
-  "Topic :: Scientific/Engineering :: Spatial-Temporal Data Mining",
   "Topic :: Software Development :: Libraries :: Python Modules",
   "Intended Audience :: Developers",
-  "Intended Audience :: Scientists",
-  "Framework :: PyTorch",
+  "Intended Audience :: Science/Research",
+  "Natural Language :: Chinese (Simplified)",
 ]
 
 [project.urls]
 Homepage = "https://github.com/Spatial-Temporal-Data-Mining/TrajDL"
-Documentation = "https://TODO"
+Documentation = "https://trajdl.readthedocs.io/en/latest/"
 "Bug Tracker" = "https://github.com/Spatial-Temporal-Data-Mining/TrajDL/issues"
 Discussions = "https://github.com/Spatial-Temporal-Data-Mining/TrajDL/discussions"
 Changelog = "https://github.com/Spatial-Temporal-Data-Mining/TrajDL/blob/master/CHANGELOG.md"
