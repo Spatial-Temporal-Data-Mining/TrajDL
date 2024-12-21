@@ -1,13 +1,12 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: Python package
+name: Test TrajDL on branch main
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   build:
@@ -51,3 +50,18 @@ jobs:
         isort -j -1 .
         black .
         pytest -s
+    
+    - name: Build package
+      run: |
+        if [ "${{ matrix.python-version }}" = "3.12" ]; then
+          python -m build
+        fi
+
+    - name: Upload artifacts
+      if: matrix.python-version == '3.12'
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-${{ github.ref_name }}-${{ github.sha }}-${{ matrix.python-version }}
+        path: dist/
+        retention-days: 1
+        overwrite: true

@@ -1,0 +1,77 @@
+name: Build v Docs and Publish
+
+on:
+  workflow_run:
+    workflows: ["Test TrajDL on tag v"]
+    types:
+      - completed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/trajdl
+    
+    permissions:
+      contents: write  # IMPORTANT: mandatory for making GitHub Releases
+      id-token: write  # IMPORTANT: mandatory for sigstore
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: dist
+        name: dist-${{ github.event.workflow_run.head_branch }}-${{ github.sha }}
+        run-id: ${{ github.event.workflow_run.id }}
+        github-token: ${{ secrets.PAT_FOR_ARTIFACTS }}
+
+    - name: Sign the dists with Sigstore
+      uses: sigstore/gh-action-sigstore-python@v3.0.0
+      with:
+        inputs: >-
+          ./dist/*.tar.gz
+          ./dist/*.whl
+
+    - name: Create GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_FOR_RELEASE }}
+      run: >-
+        gh release create
+        '${{ github.event.workflow_run.head_branch }}'
+        --repo '${{ github.repository }}'
+        --notes ""
+
+    - name: Upload artifact signatures to GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ secrets.PAT_FOR_RELEASE }}
+      # Upload to GitHub Release using the `gh` CLI.
+      # `dist/` contains the built packages, and the
+      # sigstore-produced signatures and certificates.
+      run: >-
+        gh release upload
+        '${{ github.event.workflow_run.head_branch }}' dist/**
+        --repo '${{ github.repository }}'
+
+    - name: Publish to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+        user: __token__
+        password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+        packages_dir: dist/
+        skip_existing: true

@@ -1,0 +1,127 @@
+name: Test TrajDL on tag v
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build_wheels:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: pypa/cibuildwheel@v2.22
+
+    - name: Check wheels
+      run: |
+        ls wheelhouse
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-${{ github.ref_name }}-${{ github.sha }}-wheel
+        path: wheelhouse/*.whl
+        retention-days: 1
+        overwrite: true
+
+  test_wheels_and_build_sdist:
+    needs: [build_wheels]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: dist-${{ github.ref_name }}-${{ github.sha }}-wheel
+        path: dist
+        github-token: ${{ secrets.PAT_FOR_ARTIFACTS }}
+
+    - name: Install TrajDL
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+        PYTHON_VERSION=${{ matrix.python-version }}
+        PYTHON_VERSION_NO_DOT="${PYTHON_VERSION/./}"
+        python -m pip install "dist/trajdl-0.1.0-cp${PYTHON_VERSION_NO_DOT}-cp${PYTHON_VERSION_NO_DOT}-manylinux_2_17_x86_64.manylinux2014_x86_64.whl[dev,docs]"
+
+    - name: Cache datasets
+      id: cache-datasets
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/trajdl
+        key: trajdl-cache-datasets
+
+    - name: Test with pytest
+      run: |
+        pytest -s
+
+    - name: Build docs
+      if: matrix.python-version == '3.12'
+      run: |
+        cd docs && make -j 4 html && cd ..
+  
+    - name: Get branch name
+      if: matrix.python-version == '3.12'
+      id: branch-name
+      run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
+    - name: Checkout documentation repository
+      if: matrix.python-version == '3.12'
+      uses: actions/checkout@v3
+      with:
+        repository: Spatial-Temporal-Data-Mining/TrajDL-docs
+        token: ${{ secrets.PAT_FOR_DOCS }}
+        path: docs-repo
+        fetch-depth: 0  # 获取所有分支信息
+
+    - name: Deploy to documentation repository
+      if: matrix.python-version == '3.12'
+      run: |
+        cd docs-repo
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+        
+        git checkout -b ${{ github.ref_name }} || git checkout ${{ github.ref_name }}
+
+        # 复制文档
+        rm -rf *  # 清空当前分支内容
+        cp -r ../docs/build/html/ .
+        cp ../.readthedocs.yaml .
+        
+        # 提交更改
+        git add .
+        git commit -m "Update documentation from source repository" || echo "No changes to commit"
+        git push origin ${{ github.ref_name }}
+        cd ..
+    
+    - name: Build SDist
+      if: matrix.python-version == '3.12'
+      run: |
+        python -m build --sdist
+
+    - name: Upload artifacts
+      if: matrix.python-version == '3.12'
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist-${{ github.ref_name }}-${{ github.sha }}
+        path: dist/
+        retention-days: 1
+        overwrite: true
