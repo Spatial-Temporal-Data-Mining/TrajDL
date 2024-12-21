@@ -34,4 +34,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - None
 
-[0.1.0]: https://github.com/username/project/releases/tag/v0.1.0
+[0.1.0]: https://github.com/Spatial-Temporal-Data-Mining/TrajDL/releases/tag/v0.1.0
