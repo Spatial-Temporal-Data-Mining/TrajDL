@@ -169,7 +169,7 @@ def test_count_cells():
         ]
     )
 
-    boundary = trajdl_cpp.RectangleBoundary(
+    boundary = trajdl_cpp.grid.RectangleBoundary(
         min_x=-8.735152,
         min_y=40.953673,
         max_x=-8.156309,

@@ -31,7 +31,7 @@ from trajdl.datasets.open_source.conf import PortoDataset
 from trajdl.grid.base import SimpleGridSystem
 from trajdl.tokenizers.t2vec import T2VECTokenizer
 
-boundary = trajdl_cpp.RectangleBoundary(-8.735152, 40.953673, -8.156309, 41.307945)
+boundary = trajdl_cpp.grid.RectangleBoundary(-8.735152, 40.953673, -8.156309, 41.307945)
 grid = SimpleGridSystem(boundary=boundary.to_web_mercator(), step_x=100.0, step_y=100.0)
 
 # 训练样本范围、验证样本范围、测试样本起始下标，测试样本数

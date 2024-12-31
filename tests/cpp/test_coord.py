@@ -24,7 +24,7 @@ from .utils import gps_to_web_mercator, web_mercator_to_gps
 def test_coord():
     for _ in range(1000):
         lng, lat = random.uniform(-180, 180), random.uniform(-90, 90)
-        coord = trajdl_cpp.Coord(lng, lat)
+        coord = trajdl_cpp.grid.Coord(lng, lat)
         assert np.allclose(lng, coord.lng)
         assert np.allclose(lat, coord.lat)
 
@@ -34,7 +34,7 @@ def test_web_coord():
         x, y = random.uniform(-20037508.342789244, 20037508.342789244), random.uniform(
             103672149.75803147, -103672149.75439242
         )
-        coord = trajdl_cpp.WebMercatorCoord(x, y)
+        coord = trajdl_cpp.grid.WebMercatorCoord(x, y)
         assert np.allclose(x, coord.x)
         assert np.allclose(y, coord.y)
 
@@ -42,7 +42,7 @@ def test_web_coord():
 def test_convert_gps_to_webmercator():
     for _ in range(1000):
         lng, lat = random.uniform(-180, 180), random.uniform(-90, 90)
-        web_coord = trajdl_cpp.convert_gps_to_webmercator(lng, lat)
+        web_coord = trajdl_cpp.grid.convert_gps_to_webmercator(lng, lat)
         web_coord_py = gps_to_web_mercator(lng, lat)
         assert np.allclose(web_coord_py[0], web_coord.x)
         assert np.allclose(web_coord_py[1], web_coord.y)
@@ -53,7 +53,7 @@ def test_convert_webmercator_to_gps():
         x, y = random.uniform(-20037508.342789244, 20037508.342789244), random.uniform(
             103672149.75803147, -103672149.75439242
         )
-        coord = trajdl_cpp.convert_webmercator_to_gps(x, y)
+        coord = trajdl_cpp.grid.convert_webmercator_to_gps(x, y)
         coord_py = web_mercator_to_gps(x, y)
         assert np.allclose(coord_py[0], coord.lng)
         assert np.allclose(coord_py[1], coord.lat)

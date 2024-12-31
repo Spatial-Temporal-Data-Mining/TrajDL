@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <string>
 #include <vector>
 #include <sstream>
 #include <cmath>
 #include <random>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
-#include "coord.h"
-#include "region.h"
-
+#include "grid/coord.h"
+#include "grid/region.h"
 
 namespace py = pybind11;
 

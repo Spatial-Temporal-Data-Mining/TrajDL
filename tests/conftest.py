@@ -97,7 +97,9 @@ def test_trajectory_dataset(traj_samples: List[Trajectory]) -> TrajectoryDataset
 
 @pytest.fixture(scope="session", autouse=True)
 def t2vec_tokenizer(traj_samples: List[Trajectory]) -> T2VECTokenizer:
-    boundary = trajdl_cpp.RectangleBoundary(-8.735152, 40.953673, -8.156309, 41.307945)
+    boundary = trajdl_cpp.grid.RectangleBoundary(
+        -8.735152, 40.953673, -8.156309, 41.307945
+    )
     web_mercator_boundary = boundary.to_web_mercator()
     grid = SimpleGridSystem(boundary=web_mercator_boundary, step_x=100.0, step_y=100.0)
 
@@ -113,7 +115,7 @@ def t2vec_tokenizer(traj_samples: List[Trajectory]) -> T2VECTokenizer:
 
 @pytest.fixture(scope="session", autouse=True)
 def test_hierarchy() -> HierarchyGridSystem:
-    boundary = trajdl_cpp.RectangleBoundary(
+    boundary = trajdl_cpp.grid.RectangleBoundary(
         min_x=-8.690261, min_y=41.140092, max_x=-8.549155, max_y=41.185969
     )
     steps = [(0.04, 0.016), (0.02, 0.005), (0.0008, 0.0009)]

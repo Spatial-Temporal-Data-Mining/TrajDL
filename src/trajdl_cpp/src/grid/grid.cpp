@@ -17,11 +17,12 @@
 #include <string>
 #include <unordered_map>
 #include <iostream>
+#include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <optional>
-#include "grid.h"
-#include "region.h"
+#include "grid/region.h"
+#include "grid/grid.h"
 
 namespace py = pybind11;
 

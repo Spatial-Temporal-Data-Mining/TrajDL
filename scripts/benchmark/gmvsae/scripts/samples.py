@@ -122,7 +122,7 @@ if __name__ == "__main__":
     grid_height, grid_width = 0.1, 0.1
     lat_size, lng_size = height2lat(grid_height), width2lng(grid_width)
     grid = SimpleGridSystem(
-        trajdl_cpp.RectangleBoundary(
+        trajdl_cpp.grid.RectangleBoundary(
             min_x=-8.690261,
             min_y=41.140092,
             max_x=-8.549155,

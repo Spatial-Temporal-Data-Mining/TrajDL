@@ -15,8 +15,9 @@
 #include <cmath>
 #include <sstream>
 #include <iomanip>
+#include <string>
 #include <pybind11/pybind11.h>
-#include "coord.h"
+#include "grid/coord.h"
 
 namespace py = pybind11;
 

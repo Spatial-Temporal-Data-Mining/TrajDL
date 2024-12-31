@@ -19,11 +19,11 @@
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <iostream>
-#include "coord.h"
-#include "t2vec.h"
-#include "grid.h"
-#include "region.h"
+#include "grid/coord.h"
+#include "grid/grid.h"
+#include "grid/region.h"
 #include "trajutils.h"
+#include "t2vec.h"
 
 namespace py = pybind11;
 

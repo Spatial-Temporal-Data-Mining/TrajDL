@@ -35,7 +35,7 @@ grid_height, grid_width = 0.1, 0.1
 lat_size, lng_size = grid_height / 110.574, grid_width / 111.320 / 0.99974
 grid = SimpleGridSystem(
     # 使用波尔多市的左下角点和右上角点来构建和切分网格系统
-    trajdl_cpp.RectangleBoundary(
+    trajdl_cpp.grid.RectangleBoundary(
         min_x=-8.690261,
         min_y=41.140092,
         max_x=-8.549155,

@@ -91,7 +91,7 @@ if __name__ == "__main__":
 
     output_folder = args.output_folder
 
-    boundary = trajdl_cpp.RectangleBoundary(
+    boundary = trajdl_cpp.grid.RectangleBoundary(
         min_x=-8.735152,
         min_y=40.953673,
         max_x=-8.156309,

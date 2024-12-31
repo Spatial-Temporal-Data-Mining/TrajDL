@@ -33,7 +33,7 @@ class T2VECTokenizer(AbstractTrajTokenizer):
     def __init__(
         self,
         grid: SimpleGridSystem,
-        gps_boundary: trajdl_cpp.RectangleBoundary,
+        gps_boundary: trajdl_cpp.grid.RectangleBoundary,
         vocab: Dict[str, int],
         with_kd_tree: bool = False,
         hot_locations: List[str] = None,
@@ -45,7 +45,7 @@ class T2VECTokenizer(AbstractTrajTokenizer):
         grid: SimpleGridSystem
             网格系统
 
-        gps_boundary: trajdl_cpp.RectangleBoundary
+        gps_boundary: trajdl_cpp.grid.RectangleBoundary
             GPS边界
 
         vocab: Dict[str, int]
@@ -75,7 +75,7 @@ class T2VECTokenizer(AbstractTrajTokenizer):
     def construct_vocab(
         cls,
         grid: SimpleGridSystem,
-        gps_boundary: trajdl_cpp.RectangleBoundary,
+        gps_boundary: trajdl_cpp.grid.RectangleBoundary,
         trajectories: Iterable[Trajectory],
         max_vocab_size: int,
         min_freq: int,
@@ -86,7 +86,7 @@ class T2VECTokenizer(AbstractTrajTokenizer):
         grid: SimpleGridSystem
             这个是基于web mercator坐标系的网格系统
 
-        gps_boundary: trajdl_cpp.RectangleBoundary
+        gps_boundary: trajdl_cpp.grid.RectangleBoundary
             这个是基于WGS84坐标系的boundary
 
         """
@@ -129,7 +129,7 @@ class T2VECTokenizer(AbstractTrajTokenizer):
     def build(
         cls,
         grid: SimpleGridSystem,
-        boundary: trajdl_cpp.RectangleBoundary,
+        boundary: trajdl_cpp.grid.RectangleBoundary,
         trajectories: Iterable[Trajectory],
         max_vocab_size: int,
         min_freq: int,

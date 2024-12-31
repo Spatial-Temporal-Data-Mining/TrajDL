@@ -22,8 +22,8 @@
 #include <unordered_map>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
-#include "coord.h"
-#include "region.h"
+#include "grid/coord.h"
+#include "grid/region.h"
 #include "trajutils.h"
 
 namespace py = pybind11;

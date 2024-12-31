@@ -43,7 +43,7 @@ kernelspec:
 我们先看一下`Boundary`。
 
 ```{code-cell} ipython3
-from trajdl.trajdl_cpp import RectangleBoundary
+from trajdl.trajdl_cpp.grid import RectangleBoundary
 
 boundary = RectangleBoundary(min_x=0, min_y=0, max_x=10, max_y=10)
 print(boundary)

@@ -12,28 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// trajutils.h
+#ifndef DISTANCE_H
+#define DISTANCE_H
 
-#ifndef TRAJUTILS_H
-#define TRAJUTILS_H
-
-#include <vector>
-#include <string>
-#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
-#include "grid/coord.h"
-#include "grid/region.h"
+#include "distance/frechet.h"
 
 namespace py = pybind11;
 
-std::string seq2str(const std::vector<int> &seq);
+void bind_distance_module(py::module_ &m);
 
-// 针对一条轨迹数据随机丢弃掉一些轨迹点，得到新的轨迹
-py::array_t<double> downsampling(const py::array_t<double> &traj, double rate);
-
-// 随机将一条轨迹序列里面的轨迹点进行扰动
-py::array_t<double> distort(const py::array_t<double> &traj, double rate, double radius);
-
-py::tuple split_array_by_first_dim_index(const py::array_t<double> &traj);
-
-#endif // TRAJUTILS_H
+#endif // DISTANCE_H

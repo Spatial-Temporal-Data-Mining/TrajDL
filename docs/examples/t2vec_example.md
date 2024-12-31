@@ -121,7 +121,7 @@ print(len(train_traj), len(val_traj), len(test_traj))
 from trajdl import trajdl_cpp
 
 # 基于经纬度系统的区域边界
-boundary_original = trajdl_cpp.RectangleBoundary(
+boundary_original = trajdl_cpp.grid.RectangleBoundary(
     min_x=-8.690261,
     min_y=41.140092,
     max_x=-8.549155,
@@ -138,8 +138,8 @@ print(f"boundary: {boundary}")
 在`TrajDL`中提供了将经纬度坐标转换为平面坐标的API：
 
 ```{code-cell} ipython3
-print(trajdl_cpp.convert_gps_to_webmercator(-8.690261, 41.140092))
-print(trajdl_cpp.convert_gps_to_webmercator(0, 0))
+print(trajdl_cpp.grid.convert_gps_to_webmercator(-8.690261, 41.140092))
+print(trajdl_cpp.grid.convert_gps_to_webmercator(0, 0))
 ```
 
 可以看到经纬度坐标$(0,0)$对应墨卡托投影系统中的坐标原点$(0,0)$。下面我们在墨卡托系统中对波尔多市的地图进行网格系统的构建，一个网格单元的大小是$100m \times 100m$
@@ -164,7 +164,7 @@ print(len(grid), grid.num_x_grids, grid.num_y_grids)
 
 ```{code-cell} ipython3
 # 转墨卡托坐标系统
-web_mercator_location = trajdl_cpp.convert_gps_to_webmercator(-8.610291, 41.140746)
+web_mercator_location = trajdl_cpp.grid.convert_gps_to_webmercator(-8.610291, 41.140746)
 # 转网格id
 x, y = web_mercator_location.x, web_mercator_location.y
 grid_id = grid.locate_unsafe(x, y)

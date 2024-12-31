@@ -24,13 +24,13 @@ from ..conftest import FOLDER
 
 
 @pytest.fixture(scope="session", autouse=True)
-def test_boundary() -> trajdl_cpp.RectangleBoundary:
+def test_boundary() -> trajdl_cpp.grid.RectangleBoundary:
     min_x = -8.690261
     min_y = 41.140092
     max_x = -8.549155
     max_y = 41.185969
 
-    boundary = trajdl_cpp.RectangleBoundary(min_x, min_y, max_x, max_y)
+    boundary = trajdl_cpp.grid.RectangleBoundary(min_x, min_y, max_x, max_y)
     assert np.isclose(boundary.min_x, min_x)
     assert np.isclose(boundary.min_y, min_y)
     assert np.isclose(boundary.max_x, max_x)
@@ -38,12 +38,14 @@ def test_boundary() -> trajdl_cpp.RectangleBoundary:
 
     assert boundary.to_tuple() == (min_x, min_y, max_x, max_y)
     assert (
-        trajdl_cpp.RectangleBoundary.from_tuple((min_x, min_y, max_x, max_y)).to_tuple()
+        trajdl_cpp.grid.RectangleBoundary.from_tuple(
+            (min_x, min_y, max_x, max_y)
+        ).to_tuple()
         == boundary.to_tuple()
     )
 
     with pytest.raises(ValueError, match="Length of tuple should be 4."):
-        trajdl_cpp.RectangleBoundary.from_tuple((1, 2, 3))
+        trajdl_cpp.grid.RectangleBoundary.from_tuple((1, 2, 3))
 
     for _ in range(100):
         length = 100

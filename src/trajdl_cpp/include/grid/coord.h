@@ -18,7 +18,6 @@
 
 #include <string>
 #include <pybind11/pybind11.h>
-#include "coord.h"
 
 namespace py = pybind11;
 

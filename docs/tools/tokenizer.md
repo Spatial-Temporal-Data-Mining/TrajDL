@@ -168,7 +168,7 @@ print(min_lng, max_lng, min_lat, max_lat)
 ```
 
 ```{code-cell} ipython3
-from trajdl.trajdl_cpp import RectangleBoundary
+from trajdl.trajdl_cpp.grid import RectangleBoundary
 from trajdl.grid.base import SimpleGridSystem
 
 # 使用经纬度的最大最小值构建Boundary

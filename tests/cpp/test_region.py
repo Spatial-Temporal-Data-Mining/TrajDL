@@ -19,7 +19,7 @@ from trajdl.grid.base import SimpleGridSystem
 
 
 def test_boundary_and_grid():
-    boundary = trajdl_cpp.RectangleBoundary(
+    boundary = trajdl_cpp.grid.RectangleBoundary(
         min_x=-8.735152,
         min_y=40.953673,
         max_x=-8.156309,
@@ -37,7 +37,7 @@ def test_boundary_and_grid():
 
 
 def test_gps_2_loc():
-    boundary = trajdl_cpp.RectangleBoundary(
+    boundary = trajdl_cpp.grid.RectangleBoundary(
         min_x=-8.735152,
         min_y=40.953673,
         max_x=-8.156309,
@@ -54,5 +54,5 @@ def test_gps_2_loc():
         (-8.620794, 41.155884, "192337"),
     ]
     for lng, lat, gt in samples:
-        web_point = trajdl_cpp.convert_gps_to_webmercator(lng, lat)
+        web_point = trajdl_cpp.grid.convert_gps_to_webmercator(lng, lat)
         assert grid.locate(web_point.x, web_point.y) == gt

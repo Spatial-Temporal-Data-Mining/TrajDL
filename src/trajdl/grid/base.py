@@ -24,11 +24,11 @@ from .. import trajdl_cpp
 
 
 class BaseGridSystem(ABC):
-    def __init__(self, boundary: trajdl_cpp.RectangleBoundary):
+    def __init__(self, boundary: trajdl_cpp.grid.RectangleBoundary):
         self._boundary = boundary
 
     @property
-    def boundary(self) -> trajdl_cpp.RectangleBoundary:
+    def boundary(self) -> trajdl_cpp.grid.RectangleBoundary:
         return self._boundary
 
     @abstractmethod
@@ -84,12 +84,12 @@ class SimpleGridSystem(BaseGridSystem):
     基础网格系统，一般x是经度，y是纬度
     """
 
-    boundary: trajdl_cpp.RectangleBoundary
+    boundary: trajdl_cpp.grid.RectangleBoundary
     step_x: float
     step_y: float
 
     def __init__(
-        self, boundary: trajdl_cpp.RectangleBoundary, step_x: float, step_y: float
+        self, boundary: trajdl_cpp.grid.RectangleBoundary, step_x: float, step_y: float
     ):
         super().__init__(boundary=boundary)
         self._step_x = step_x
@@ -127,7 +127,7 @@ class SimpleGridSystem(BaseGridSystem):
 
     def __iter__(
         self,
-    ) -> Generator[Tuple[trajdl_cpp.RectangleBoundary, str], None, None]:
+    ) -> Generator[Tuple[trajdl_cpp.grid.RectangleBoundary, str], None, None]:
         for y_idx in range(self._num_y_grids):
             for x_idx in range(self._num_x_grids):
                 min_x = self._min_x + x_idx * self.step_x
@@ -135,7 +135,7 @@ class SimpleGridSystem(BaseGridSystem):
                 max_x = min(self._max_x, min_x + self.step_x)
                 max_y = min(self._max_y, min_y + self.step_y)
                 yield (
-                    trajdl_cpp.RectangleBoundary(
+                    trajdl_cpp.grid.RectangleBoundary(
                         min_x=min_x, min_y=min_y, max_x=max_x, max_y=max_y
                     ),
                     self.locate_unsafe(x=(max_x + min_x) / 2, y=(max_y + min_y) / 2),
@@ -146,21 +146,23 @@ class SimpleGridSystem(BaseGridSystem):
         将网格坐标转换为位置id
 
         """
-        return trajdl_cpp.locate_by_grid_coordinate(grid_x, grid_y, self._num_x_grids)
+        return trajdl_cpp.grid.locate_by_grid_coordinate(
+            grid_x, grid_y, self._num_x_grids
+        )
 
     def locate_unsafe(self, x: float, y: float) -> str:
         """
         使用向下取整，因此所有网格都是左侧和下侧的边界是包含的，右侧和上侧是非包含
         """
 
-        return trajdl_cpp.locate_in_grid(
+        return trajdl_cpp.grid.locate_in_grid(
             x, y, self.boundary, self.step_x, self.step_y, self._num_x_grids
         )
 
     def locate_unsafe_np(
         self, coords: np.ndarray, unk_loc: Optional[str] = None
     ) -> List[str]:
-        return trajdl_cpp.locate_in_grid_np(
+        return trajdl_cpp.grid.locate_in_grid_np(
             coords,
             self.boundary,
             self.step_x,
@@ -173,7 +175,7 @@ class SimpleGridSystem(BaseGridSystem):
         return 0 <= grid_x < self._num_x_grids and 0 <= grid_y < self._num_y_grids
 
     def to_grid_coordinate_unsafe(self, loc: str) -> Tuple[int, int]:
-        return trajdl_cpp.reverse_locate_in_grid(loc, self._num_x_grids).to_tuple()
+        return trajdl_cpp.grid.reverse_locate_in_grid(loc, self._num_x_grids).to_tuple()
 
     def to_grid_coordinate(self, loc: str) -> Tuple[int, int]:
         try:
@@ -189,8 +191,8 @@ class SimpleGridSystem(BaseGridSystem):
         """
         给定网格坐标，获取网格中心点的原始坐标
         """
-        p = trajdl_cpp.grid_coord_to_centroid_point(
-            trajdl_cpp.GridCoord(
+        p = trajdl_cpp.grid.grid_coord_to_centroid_point(
+            trajdl_cpp.grid.GridCoord(
                 grid_x=grid_x,
                 grid_y=grid_y,
             ),

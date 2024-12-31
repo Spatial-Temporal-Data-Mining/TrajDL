@@ -25,7 +25,9 @@ from .base import BaseGridSystem, SimpleGridSystem
 
 class HierarchyGridSystem(BaseGridSystem):
     def __init__(
-        self, boundary: trajdl_cpp.RectangleBoundary, steps: List[Tuple[float, float]]
+        self,
+        boundary: trajdl_cpp.grid.RectangleBoundary,
+        steps: List[Tuple[float, float]],
     ):
         super().__init__(boundary=boundary)
         self.steps = steps
@@ -55,7 +57,7 @@ class HierarchyGridSystem(BaseGridSystem):
         all_grids = []
 
         def recursive_split_region(
-            boundary: trajdl_cpp.RectangleBoundary,
+            boundary: trajdl_cpp.grid.RectangleBoundary,
             parent_grid_ids: List[str],
             steps: List[Tuple[float, float]],
             depth: int = 0,
@@ -101,7 +103,7 @@ class HierarchyGridSystem(BaseGridSystem):
 
         cols = self.grid_id_cols
         for line in df.itertuples():
-            boundary = trajdl_cpp.RectangleBoundary.from_tuple(line.boundary)
+            boundary = trajdl_cpp.grid.RectangleBoundary.from_tuple(line.boundary)
             if boundary.in_boundary(x, y):
                 return line.grid_id
         return None
