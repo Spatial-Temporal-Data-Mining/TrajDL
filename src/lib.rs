@@ -15,4 +15,5 @@
 // TODO(WIREUP): temporary module list; the final list from TrajDL_new is
 // restored when the remaining Rust modules land.
 pub mod err;
+pub mod sequence;
 pub mod spatial;

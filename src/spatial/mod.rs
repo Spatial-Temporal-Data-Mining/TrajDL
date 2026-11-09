@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO(WIREUP): temporary module list; the final list from TrajDL_new is
-// restored when grid/region/traits/utils land.
 pub mod coord;
+pub mod grid;
+pub mod region;
+pub mod traits;
+pub mod utils;
