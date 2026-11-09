@@ -18,3 +18,4 @@ pub mod binding;
 pub mod err;
 pub mod sequence;
 pub mod spatial;
+pub mod tokenizer;
