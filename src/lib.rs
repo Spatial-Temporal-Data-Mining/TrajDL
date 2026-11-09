@@ -15,6 +15,7 @@
 // TODO(WIREUP): temporary module list; the final list from TrajDL_new is
 // restored when the remaining Rust modules land.
 pub mod binding;
+pub mod datasets;
 pub mod err;
 pub mod ops;
 pub mod sequence;
