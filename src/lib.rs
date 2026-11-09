@@ -16,6 +16,7 @@
 // restored when the remaining Rust modules land.
 pub mod binding;
 pub mod err;
+pub mod ops;
 pub mod sequence;
 pub mod spatial;
 pub mod tokenizer;
