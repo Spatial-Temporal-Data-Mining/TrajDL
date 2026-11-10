@@ -14,8 +14,14 @@
 
 # TODO(WIREUP): more DataModules land with their algorithm slices; the final
 # reference list is restored in the wire-up.
+from .abstract import BaseTrajectoryDataModule
 from .t2vec import T2VECDataModule
+from .trajcl import TrajCLDataModule
+from .trajsimi import TrajSimiDataModule
 
 __all__ = [
+    "BaseTrajectoryDataModule",
     "T2VECDataModule",
+    "TrajCLDataModule",
+    "TrajSimiDataModule",
 ]
