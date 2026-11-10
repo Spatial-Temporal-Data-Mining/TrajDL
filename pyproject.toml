@@ -96,6 +96,10 @@ docs = [
 [tool.pytest.ini_options]
 addopts = "-p no:warnings --cov=trajdl --cov-report html --durations=10"
 
+[tool.maturin]
+python-source = "python"
+module-name = "trajdl.trajdl_rust"
+
 [tool.scikit-build]
 wheel.expand-macos-universal-tags = true
 

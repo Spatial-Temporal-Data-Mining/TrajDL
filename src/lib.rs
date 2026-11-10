@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO(WIREUP): temporary module list; the final list from TrajDL_new is
-// restored when the remaining Rust modules land.
 pub mod binding;
 pub mod datasets;
 pub mod err;
@@ -21,3 +19,98 @@ pub mod ops;
 pub mod sequence;
 pub mod spatial;
 pub mod tokenizer;
+use pyo3::prelude::*;
+
+use crate::spatial::coord::{Coordinate, CoordinateSystem, GridCoord};
+use crate::tokenizer::locseq::count_locations;
+use crate::tokenizer::t2vec::count_locations_for_t2vec;
+use crate::tokenizer::trajcl::{
+    collect_token_symbols_for_trajcl, convert_traj_to_locseq_with_coords,
+};
+
+// TODO(WIREUP): algorithm-specific registrations are added by their slices:
+// - algo::t2vec::convert_coords_to_locseq
+// - binding::algo::t2vec::bucketize
+// - binding::algo::trajcl::generate_spatial_features
+// - binding::algo::trjsr::traj_to_image
+// - binding::algo::tale_forest::build_tale_huffman_forest
+
+#[pymodule]
+fn trajdl_rust<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
+    m.add_function(wrap_pyfunction!(count_locations_for_t2vec, m)?)?;
+
+    m.add_function(wrap_pyfunction!(count_locations, m)?)?;
+    m.add_function(wrap_pyfunction!(collect_token_symbols_for_trajcl, m)?)?;
+    m.add_function(wrap_pyfunction!(convert_traj_to_locseq_with_coords, m)?)?;
+
+    // Datasets: schema + RecordBatch builders (Rust fast path)
+    m.add_function(wrap_pyfunction!(
+        crate::binding::datasets::schema::get_traj_schema,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(
+        crate::binding::datasets::schema::get_loc_seq_schema,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(
+        crate::binding::datasets::schema::build_traj_record_batch_py,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(
+        crate::binding::datasets::schema::build_loc_seq_record_batch_py,
+        m
+    )?)?;
+
+    // Ops: general
+    m.add_function(wrap_pyfunction!(
+        crate::binding::ops::split_trajectory_by_parity,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(crate::binding::ops::subset_trajectory, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::binding::ops::mask_trajectory, m)?)?;
+    m.add_function(wrap_pyfunction!(
+        crate::binding::ops::seed_augmentation_rng,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(crate::binding::ops::simplify::rdp, m)?)?;
+
+    // Ops: distort
+    m.add_function(wrap_pyfunction!(crate::binding::ops::distort::distort, m)?)?;
+    m.add_function(wrap_pyfunction!(
+        crate::binding::ops::batch_downsample_and_distort,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(
+        crate::binding::ops::distort_split_traj,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(
+        crate::binding::ops::truncated_gaussian_distort,
+        m
+    )?)?;
+    m.add_function(wrap_pyfunction!(crate::binding::ops::gaussian_distort, m)?)?;
+
+    // Ops: downsample
+    m.add_function(wrap_pyfunction!(crate::binding::ops::downsampling, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::binding::ops::random_subsample, m)?)?;
+    m.add_function(wrap_pyfunction!(
+        crate::binding::ops::downsample_split_traj,
+        m
+    )?)?;
+
+    m.add_class::<Coordinate>()?;
+    m.add_class::<CoordinateSystem>()?;
+    m.add_class::<GridCoord>()?;
+    m.add_class::<crate::binding::spatial::region::PyRectangleBoundary>()?;
+    m.add_class::<crate::binding::spatial::grid::PySimpleGridSystem>()?;
+    m.add_class::<crate::binding::spatial::grid::PyUniformDegreeGridSystem>()?;
+    m.add_function(wrap_pyfunction!(crate::spatial::coord::wgs84, m)?)?;
+
+    m.add_class::<crate::sequence::base::SeqType>()?;
+    m.add_class::<crate::binding::seq::container::PyLocSeq>()?;
+    m.add_class::<crate::binding::seq::container::PyTrajectory>()?;
+    m.add_class::<crate::binding::seq::view::PyLocSeqView>()?;
+    m.add_class::<crate::binding::seq::view::PyTrajectoryView>()?;
+
+    Ok(())
+}
