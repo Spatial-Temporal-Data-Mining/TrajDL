@@ -16,12 +16,14 @@
 # reference list is restored in the wire-up.
 from .abstract import BaseTrajectoryDataModule
 from .t2vec import T2VECDataModule
+from .tale import TaleDataModule
 from .trajcl import TrajCLDataModule
 from .trajsimi import TrajSimiDataModule
 
 __all__ = [
     "BaseTrajectoryDataModule",
     "T2VECDataModule",
+    "TaleDataModule",
     "TrajCLDataModule",
     "TrajSimiDataModule",
 ]
