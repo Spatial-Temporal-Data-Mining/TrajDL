@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO(WIREUP): temporary module list; algo bindings land with their
+// TODO(WIREUP): temporary module list; remaining algo bindings land with their
 // algorithm slices, and the final reference list is restored in the wire-up.
+pub mod algo;
 pub mod datasets;
 pub mod ops;
 pub mod seq;

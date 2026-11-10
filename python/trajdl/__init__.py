@@ -32,6 +32,7 @@ from .trajdl_rust import (
     TrajectoryView,  # noqa: F401
     UniformDegreeGridSystem,
     collect_token_symbols_for_trajcl,
+    convert_coords_to_locseq,
     convert_traj_to_locseq_with_coords,
     count_locations,
     count_locations_for_t2vec,

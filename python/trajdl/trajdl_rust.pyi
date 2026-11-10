@@ -660,6 +660,11 @@ class SeqType(Enum):
 
 def batch_downsample_and_distort(seq:typing.Any, downsample_rate_list:typing.Sequence[builtins.float], keep_endpoints:builtins.bool, allow_empty:builtins.bool, distort_rate_list:typing.Sequence[builtins.float], distort_radius:builtins.float) -> builtins.list[Trajectory]: ...
 
+def bucketize(src_lengths:numpy.typing.NDArray[numpy.int64], src_label_indices:numpy.typing.NDArray[numpy.int64], trg_lengths:numpy.typing.NDArray[numpy.int64], src_bound:typing.Sequence[builtins.int], trg_bound:typing.Sequence[builtins.int]) -> builtins.dict[builtins.int, builtins.list[builtins.int]]:
+    r"""
+    Bucketing function for t2vec: places sequences into buckets based on their input and output sequence lengths
+    """
+
 def build_loc_seq_record_batch_py(seqs:typing.Sequence[LocSeq]) -> pyarrow.RecordBatch:
     r"""
     Build a `pyarrow.RecordBatch` from a Python list of `LocSeq`.
@@ -699,6 +704,11 @@ def collect_token_symbols_for_trajcl(seqs:list, web_grid:SimpleGridSystem) -> bu
     ----------
     List[str]
         List of all token symbols that occurred (unordered, no duplicates)
+    """
+
+def convert_coords_to_locseq(seq:typing.Any, web_grid:SimpleGridSystem, gps_boundary:RectangleBoundary, unk_loc:builtins.str, bos_token:typing.Optional[builtins.str]=None, eos_token:typing.Optional[builtins.str]=None) -> builtins.list[builtins.str]:
+    r"""
+    Convert a longitude/latitude sequence into a location sequence, filtering out consecutive duplicate locations
     """
 
 def convert_traj_to_locseq_with_coords(seq:typing.Any, web_grid:SimpleGridSystem, unk_loc:builtins.str) -> tuple[builtins.list[builtins.str], Trajectory]:
