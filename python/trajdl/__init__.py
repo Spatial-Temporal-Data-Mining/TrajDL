@@ -38,6 +38,7 @@ from .trajdl_rust import (
     count_locations_for_t2vec,
     distort,
     downsampling,
+    generate_spatial_features,
     mask_trajectory,
     random_subsample,
     rdp,

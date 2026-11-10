@@ -851,6 +851,42 @@ def gaussian_distort(seq:typing.Any, rate:builtins.float, sigma:builtins.float) 
     Each coordinate axis samples independently from N(0, sigma^2), without truncation.
     """
 
+def generate_spatial_features(seq:typing.Any, x_min:builtins.float, x_max:builtins.float, y_min:builtins.float, y_max:builtins.float, ref_length:builtins.float) -> builtins.list[builtins.list[builtins.float]]:
+    r"""
+    Generate per-point local spatial features along the trajectory
+    
+    For each point, 4 features are generated:
+    1. norm_x: normalized x coordinate
+    2. norm_y: normalized y coordinate
+    3. local_dist: local average movement distance (average of the distances to the neighboring points / reference length)
+    4. heading_change: normalized heading change angle, typically in [-1, 0]
+       - straight ahead: -1
+       - 90-degree turn: -0.5
+       - 180-degree turn (U-turn): 0
+    
+    The local_dist and heading_change of the first and last points are set to 0.
+    
+    Parameters
+    ----------
+    seq: Trajectory
+        Input trajectory (Web Mercator coordinate system)
+    x_min: float
+        Boundary x minimum
+    x_max: float
+        Boundary x maximum
+    y_min: float
+        Boundary y minimum
+    y_max: float
+        Boundary y maximum
+    ref_length: float
+        Reference length used for distance normalization (usually the grid diagonal length)
+    
+    Returns
+    ----------
+    List[List[float]]
+        Feature list of shape [N, 4], 4 features per point
+    """
+
 def get_loc_seq_schema() -> pyarrow.Schema:
     r"""
     Return the canonical `LocSeq` Arrow schema as a `pyarrow.Schema`.

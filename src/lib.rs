@@ -23,6 +23,7 @@ pub mod tokenizer;
 use pyo3::prelude::*;
 
 use crate::algo::t2vec::convert_coords_to_locseq;
+use crate::binding::algo::trajcl::generate_spatial_features;
 use crate::spatial::coord::{Coordinate, CoordinateSystem, GridCoord};
 use crate::tokenizer::locseq::count_locations;
 use crate::tokenizer::t2vec::count_locations_for_t2vec;
@@ -32,7 +33,6 @@ use crate::tokenizer::trajcl::{
 
 // TODO(WIREUP): remaining algorithm-specific registrations are added by their
 // slices:
-// - binding::algo::trajcl::generate_spatial_features
 // - binding::algo::trjsr::traj_to_image
 // - binding::algo::tale_forest::build_tale_huffman_forest
 
@@ -45,6 +45,7 @@ fn trajdl_rust<'py>(m: &Bound<'py, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(count_locations, m)?)?;
     m.add_function(wrap_pyfunction!(collect_token_symbols_for_trajcl, m)?)?;
     m.add_function(wrap_pyfunction!(convert_traj_to_locseq_with_coords, m)?)?;
+    m.add_function(wrap_pyfunction!(generate_spatial_features, m)?)?;
 
     // Datasets: schema + RecordBatch builders (Rust fast path)
     m.add_function(wrap_pyfunction!(
