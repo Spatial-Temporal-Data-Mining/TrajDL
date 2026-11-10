@@ -15,7 +15,10 @@
 # TODO(WIREUP): more algorithms land with their slices; the final reference
 # list is restored in the wire-up.
 from .t2vec import T2VEC
+from .trajcl import TrajCL, TrajCLLightning
 
 __all__ = [
     "T2VEC",
+    "TrajCL",
+    "TrajCLLightning",
 ]
