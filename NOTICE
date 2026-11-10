@@ -1,0 +1,66 @@
+TrajDL
+Copyright 2024-2026 TrajDL Authors
+
+This product includes software developed at the TrajDL project
+(licensed under the Apache License, Version 2.0).
+
+========================================================================
+Third-party software notices and information
+========================================================================
+
+This product embeds or derives portions of third-party software. The
+original license text(s) are reproduced (or referenced) below and the
+corresponding TrajDL file(s) are listed, per Apache License 2.0 section
+4(d).
+
+1. mamba (https://github.com/state-spaces/mamba)
+   Copyright (c) 2023, Albert Gu, Tri Dao.
+   Licensed under the Apache License, Version 2.0
+   (full text at http://www.apache.org/licenses/LICENSE-2.0.txt,
+   SPDX Apache-2.0).
+   Inclusion of the upstream implementation, upstream code preserved
+   apart from: (a) an adapted file header and import paths and (b)
+   two explicit .contiguous() calls inserted before kernel
+   consumption for input-contiguity compatibility; semantics are
+   unchanged. Adapted in:
+     python/trajdl/algorithms/trajmamba/_vendor/ssd_combined.py
+
+2. UniTraj (https://github.com/Yasoz/UniTraj)
+   Copyright (c) the UniTraj authors.
+   Licensed under the Apache License, Version 2.0
+   (full text at https://raw.githubusercontent.com/Yasoz/UniTraj/main/LICENSE,
+   SPDX Apache-2.0; see also THIRD-PARTY-LICENSES/UniTraj-LICENSE-NOTICE.txt).
+   Portions derived from `utils/unitraj.py` and `utils/dataset.py`,
+   adapted in:
+     python/trajdl/algorithms/unitraj/model.py
+     python/trajdl/datasets/arrow/ext/unitraj.py
+
+3. TALE (https://github.com/Logan-Lin/TALE)
+   Copyright (c) 2024 Yan Lin.
+   Licensed under the MIT License (text reproduced in
+   THIRD-PARTY-LICENSES/TALE-LICENSE.txt; standard MIT text also in
+   THIRD-PARTY-LICENSES/MIT.txt).
+   Portions ported line-for-line (word2vec building blocks, from
+   `embed/w2v.py`) and ported faithfully (TALE modules):
+     python/trajdl/algorithms/embeddings/w2v.py
+     python/trajdl/algorithms/embeddings/tale.py
+     python/trajdl/algorithms/w2v.py
+
+4. RDP (https://github.com/sebleier/RDP)
+   Copyright (c) 2019 Sean Bleier.
+   Licensed under the MIT License (text reproduced in
+   THIRD-PARTY-LICENSES/RDP-LICENSE.txt).
+   Verbatim reference copy retained in the contributor layer of the source
+   repository (outside the runtime package):
+
+5. Attribution-only references (no code copied; courtesy listing,
+   no license obligation triggered):
+   - CTLE   (https://github.com/Logan-Lin/CTLE, MIT)  -- semantics aligned
+   - GMVSAE (https://github.com/liuyiding1993/ICDE2020_GMVSAE) -- reimpl
+   - t2vec  (https://github.com/boathit/t2vec) -- protocol reimplementation
+   - TrjSR  (https://github.com/C-Harlin/trjsr) -- reimpl
+   - TULER  (https://github.com/gcooq/TUL) -- reimpl
+   - UniTE  (https://github.com/Logan-Lin/UniTE, GPL-3.0) -- evaluation
+     protocol reference only; NO code copied (GPL red line enforced)
+   - MoCo   (https://github.com/facebookresearch/moco) -- reimpl with
+     attribution in python/trajdl/algorithms/trajcl/moco.py

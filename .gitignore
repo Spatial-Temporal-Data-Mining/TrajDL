@@ -104,6 +104,13 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# Rust / maturin build artifacts
+target/
+.maturin/
+python/**/*.so
+python/**/*.pyd
+*.egg-info/
+
 # add
 .idea/
 .vscode/

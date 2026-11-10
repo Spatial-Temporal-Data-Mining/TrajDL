@@ -1,13 +1,15 @@
-[build-system]
-requires = ["scikit-build-core", "pybind11"]
-build-backend = "scikit_build_core.build"
-
 [project]
 name = "trajdl"
 description = "A python toolbox for Trajectory Deep Learning."
 readme = "README.md"
-version = "0.2.0.dev0"
-license.file = "LICENSE"
+version = "0.2.0"
+# PEP 639: SPDX expression plus license-files globs, so the sdist and the
+# wheel's *.dist-info/licenses/ carry the §4(d) attribution files (NOTICE,
+# THIRD-PARTY-LICENSES/*) next to LICENSE. Note: license.file and
+# license-files are mutually exclusive under PEP 639; the License trove
+# classifier below is superseded by the SPDX expression (PEP 639).
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE", "THIRD-PARTY-LICENSES/*.txt"]
 authors = [
   { name = "Chao Song", email = "davidchaosong@outlook.com" },
   { name = "Chaoqun Feng", email = "fengchaoqun.fcq@gmail.com" },
@@ -16,28 +18,8 @@ maintainers = [
   { name = "Chao Song", email = "davidchaosong@outlook.com" },
   { name = "Chaoqun Feng", email = "fengchaoqun.fcq@gmail.com" },
 ]
-requires-python = ">=3.10,<3.13"
-
-dependencies = [
-  "scikit-learn>=1.3.2",
-  "gensim==4.3.3",
-  "polars>=1.17.1",
-  "orjson>=3.10.6",
-  "joblib>=1.4.0",
-  "tqdm>=4.66.4",
-  "lightning[extra]>=2.3.3",
-  "pyarrow>=17.0.0",
-  "torch_tb_profiler>=0.4.3",
-  "tensorboard>=2.14.0",
-  "rtree>=1.3.0",
-  "requests>=2.31.0",
-  "mmh3>=5.0.1",
-  "numpy>=1.24.0,<2.0.0",
-]
-
 classifiers = [
   "Development Status :: 5 - Production/Stable",
-  "Programming Language :: C++",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
@@ -49,32 +31,79 @@ classifiers = [
   "Intended Audience :: Science/Research",
   "Natural Language :: Chinese (Simplified)",
 ]
-
-[project.urls]
-Homepage = "https://github.com/Spatial-Temporal-Data-Mining/TrajDL"
-Documentation = "https://trajdl.readthedocs.io/en/latest/"
-"Bug Tracker" = "https://github.com/Spatial-Temporal-Data-Mining/TrajDL/issues"
-Discussions = "https://github.com/Spatial-Temporal-Data-Mining/TrajDL/discussions"
-Changelog = "https://github.com/Spatial-Temporal-Data-Mining/TrajDL/blob/master/CHANGELOG.md"
+requires-python = ">=3.10,<3.13"
+dependencies = [
+  "scikit-learn>=1.3.2",
+  "gensim==4.3.3",
+  "polars>=1.17.1",
+  "orjson>=3.10.6",
+  "joblib>=1.4.0",
+  "tqdm>=4.66.4",
+  "lightning[extra]>=2.3.3",
+  "pyarrow>=17.0.0",
+  "pyproj>=3.6.0",
+  "einops>=0.7.0",
+  "rdp>=0.8",
+  "torch_tb_profiler>=0.4.3",
+  "tensorboard>=2.14.0",
+  "rtree>=1.3.0",
+  "mmh3>=5.0.1",
+  "tzdata>=2024.1",
+  "numpy>=1.24.0,<2.0.0",
+  "traj-dist-rs>=1.0.0rc4",
+]
 
 [project.optional-dependencies]
-cpu = [
-  "torch>=2.0"
+cpu = ["torch==2.6.0"]
+cu118 = ["torch==2.6.0"]
+cu124 = ["torch==2.6.0"]
+hf = ["huggingface_hub>=0.24.0"]
+ms = ["modelscope>=1.17.0"]
+# TrajMamba extra. mamba-ssm is pinned to 2.2.4 — the exact version the parity
+# anchors were produced with (parity-critical). The anchor version of
+# causal-conv1d is 1.4.0, which ships no official torch 2.6 wheel, so we use
+# 1.5.0.post8 (pure depthwise conv, mathematically identical to 1.4.0).
+# transformers<5 keeps mamba-ssm's unpinned transitive transformers dependency
+# from pulling 5.x, which self-destructs (empirically confirmed on run r7).
+#
+# Both packages are now sourced from PyPI, which hosts them as sdist only
+# (no wheels for any platform). Installing this extra therefore requires a local
+# build toolchain: a CUDA toolkit (nvcc) plus a compatible torch already present
+# in the environment, since both setup.py files import torch at build time.
+#
+# Prebuilt-wheel distribution is a transitional concern, not a packaging one:
+# Cloud batch-job containers consume the dedicated dev-only lock (wave-2 Task 3), and the permanent
+# fix is an org-owned GitHub Releases wheel feed (AUDIT_MASTER §4.3 mid-term
+# fix / 中期正解), rebuilt by a dedicated wheel-build script.
+mamba = [
+  "einops>=0.7.0",
+  "mamba-ssm==2.2.4",
+  "causal-conv1d==1.5.0.post8",
+  "transformers>=4.40,<5",
 ]
-gpu = [
-  "torch>=2.0"
-]
+
+[dependency-groups]
 dev = [
-  "pybind11==2.13.1",
   "pytest>=8.3.2",
   "pytest-cov>=5.0.0",
-  "build>=1.2.1",
-  "isort==5.13.2",
-  "black[jupyter]==24.8.0",
-  "autoflake==2.3.1",
-  "requests-mock==1.12.1",
+  "isort>=5.13.2",
+  "black[jupyter]>=24.8.0",
+  "autoflake>=2.3.1",
+  "huggingface_hub>=0.24.0",
+  "modelscope>=1.17.0",
+  "tables>=3.9.0",
   "mypy>=1.13.0",
-  "cibuildwheel",
+  "cibuildwheel>=2.22.0",
+  "maturin>=1.9.6",
+  # BLUE scheduler parity test (py_tests/algorithms/test_blue_lightning.py) asserts
+  # bit-equality of the lr schedule against timm's CosineLRScheduler; pinned because
+  # the parity is defined against this exact implementation.
+  "timm==1.0.31",
+  # timm unconditionally imports torchvision.ops at package import time
+  # (FrozenBatchNorm2d in timm/layers/create_norm.py); pinned to the release that
+  # pairs with the torch==2.6.0 extras. The parity test itself never calls into
+  # torchvision -- it is here purely to satisfy timm's import.
+  "torchvision==0.21.0",
 ]
 docs = [
   "jupyter>=1.1.1",
@@ -92,30 +121,104 @@ docs = [
   "toml>=0.10.2",
 ]
 
-# pytest configuration
-[tool.pytest.ini_options]
-addopts = "-p no:warnings --cov=trajdl --cov-report html --durations=10"
+[project.urls]
+Homepage = "https://github.com/Spatial-Temporal-Data-Mining/TrajDL"
+Documentation = "https://trajdl.readthedocs.io/en/latest/"
+"Bug Tracker" = "https://github.com/Spatial-Temporal-Data-Mining/TrajDL/issues"
+Discussions = "https://github.com/Spatial-Temporal-Data-Mining/TrajDL/discussions"
+Changelog = "https://github.com/Spatial-Temporal-Data-Mining/TrajDL/blob/master/CHANGELOG.md"
+
+[build-system]
+requires = ["maturin>=1.9.6"]
+build-backend = "maturin"
 
 [tool.maturin]
 python-source = "python"
 module-name = "trajdl.trajdl_rust"
+features = ["pyo3/extension-module"]
 
-[tool.scikit-build]
-wheel.expand-macos-universal-tags = true
+[tool.pytest.ini_options]
+addopts = "-p no:warnings --cov=trajdl --cov-report html --durations=10 -m 'not slow and not standard'"
+markers = [
+    "slow: parity tests against the baseline reference implementation (run with `pytest -m slow`)",
+    "standard: compliance gate tests (run with `-m standard` or an explicit path)",
+]
+
+[tool.isort]
+profile = "black"
 
 [tool.cibuildwheel]
 build-frontend = "build[uv]"
 build = "cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64"
 
 [tool.cibuildwheel.pyodide]
-build-frontend = {name = "build", args = ["--exports", "whole_archive"]}
+build-frontend = { name = "build", args = ["--exports", "whole_archive"] }
+
+[tool.uv]
+conflicts = [[{ extra = "cpu" }, { extra = "cu118" }, { extra = "cu124" }]]
+
+[tool.ruff]
+# the owner-policy zone (`dev/`: one-off experiment entries, notebooks, verbatim
+# author source copies) stays outside the trunk lint gate; trunk areas
+# (python/, scripts/, py_tests/) remain fully linted by CI's root `ruff check .`.
+extend-exclude = ["dev/"]
+
+[tool.ruff.lint]
+# 精选门禁：pyflakes(E4/E7/E9/F 全 F 组) + 导入排序 + 隐式 Optional。
+# 刻意不启用 UP/SIM/C4 等风格现代化目录（存量 typing 习语一致，禁之徒增 churn）；
+# 版本 pin 0.16.8（CI 与本地 uvx ruff@0.16.8），升级须全仓复跑后过门。
+select = ["E4", "E7", "E9", "F", "I001", "RUF013"]
+
+[tool.ruff.lint.per-file-ignores]
+# 作者源码 verbatim 移植/拷贝：保持原语义不改写
+"python/trajdl/algorithms/trajmamba/_vendor/*" = ["SIM", "RUF", "C4", "F841", "E701"]
+"python/trajdl/algorithms/trajmamba/trajectory_mamba.py" = ["RUF059"]
+# __init__ 再导出模式
+"python/trajdl/**/__init__.py" = ["F401"]
+"scripts/benchmark/gmvsae/scripts/pretrain.py" = ["E402"]
+"scripts/benchmark/unite/scripts/evaluate.py" = ["E402"]
+
+# Pre-declared metadata for the two PyPI sdist-only packages of the mamba extra.
+# Neither upload ships any metadata (PyPI requires_dist is null), so a plain
+# `uv lock` would have to BUILD the sdists just to read their dependencies:
+# causal-conv1d ships no pyproject.toml (legacy setup.py imports torch at build
+# time, which always fails under build isolation) and mamba-ssm's isolated build
+# pulls a full CUDA torch into the build env. Declaring the exact upstream
+# requires-dist here (verified against the sdists on 2026-10-12:
+# causal_conv1d-1.5.0.post8/setup.py install_requires;
+# mamba_ssm-2.2.4/pyproject.toml [project].dependencies) makes `uv lock`
+# hermetic — no builds, no ambient torch, works on any machine.
+# MAINTENANCE RULE: if either version pin below is ever bumped, update the
+# matching requires-dist from the new sdist and re-verify that `uv lock`
+# reproduces uv.lock byte-identically (same invariant as wave-2 Task 1).
+[[tool.uv.dependency-metadata]]
+name = "causal-conv1d"
+version = "1.5.0.post8"
+requires-dist = ["torch", "packaging", "ninja"]
+
+[[tool.uv.dependency-metadata]]
+name = "mamba-ssm"
+version = "2.2.4"
+requires-dist = ["torch", "ninja", "einops", "transformers", "packaging", "setuptools>=61.0.0"]
 
 [tool.uv.sources]
 torch = [
   { index = "torch-cpu", extra = "cpu" },
+  { index = "torch-cu118", extra = "cu118" },
+  { index = "torch-cu124", extra = "cu124" },
 ]
 
 [[tool.uv.index]]
 name = "torch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-cu118"
+url = "https://download.pytorch.org/whl/cu118"
+explicit = true
+
+[[tool.uv.index]]
+name = "torch-cu124"
+url = "https://download.pytorch.org/whl/cu124"
 explicit = true
