@@ -672,6 +672,42 @@ def build_loc_seq_record_batch_py(seqs:typing.Sequence[LocSeq]) -> pyarrow.Recor
     See [`build_traj_record_batch_py`] for memory model details.
     """
 
+def build_tale_huffman_forest(flat_ids:numpy.typing.NDArray[numpy.int64], flat_seconds:numpy.typing.NDArray[numpy.int64], offsets:numpy.typing.NDArray[numpy.int64], slice_len:builtins.int, influ_len:builtins.int, num_threads:builtins.int=0) -> dict:
+    r"""
+    Build the TALE `SliceHuffmanForest` artifacts (rayon-parallel, behavior bit-for-bit identical to the Python implementation).
+    
+    Keys of the returned dict:
+    - scalars: `num_slots` (max visited slot id + 1), `num_inner_nodes`
+      (total number of nodes across all trees + 1, id 0 reserved for padding), `max_poi_id`
+    - arrays (CSR = `*_start` row bounds + `*_flat` values, i64; `visit_prop_flat` is f64):
+      `slot_offset` (slot id → global inner node id offset, accumulated in slot first-appearance order),
+      `tree_poi_start`/`tree_poi_flat` (slot → poi, ascending within a row = tree-build input order),
+      `pos_start`/`pos_flat`, `neg_start`/`neg_flat` (Huffman paths of the poi rows,
+      1-based local ids within the tree, 0 is the reserved padding value),
+      `visit_slice_start`/`visit_slice_flat`/`visit_prop_flat` (time slots and
+      proportions of the (poi, minute) rows), `seen_minute_start`/`seen_minute_flat` ((poi, minute)
+      co-occurrence table, poi row order, ascending and deduplicated within a row)
+    
+    Parameters
+    ----------
+    flat_ids : numpy.ndarray[int64]
+        Token ids of all points (concatenated per sentence).
+    flat_seconds : numpy.ndarray[int64]
+        Epoch seconds of all points (aligned with flat_ids, non-negative).
+    offsets : numpy.ndarray[int64]
+        Per-sentence prefix offsets, length = number of sentences + 1, last element = len(flat_ids).
+    slice_len : int
+        Time-slot length (minutes).
+    influ_len : int
+        Influence span (minutes), 0 = single-slot attribution.
+    num_threads : int, optional
+        rayon thread count; 0 = follow `TRAJDL_RAYON_THREADS` / min(#cores, 8).
+    
+    Returns
+    -------
+    dict[str, numpy.ndarray | int]
+    """
+
 def build_traj_record_batch_py(trajs:typing.Sequence[Trajectory]) -> pyarrow.RecordBatch:
     r"""
     Build a `pyarrow.RecordBatch` from a Python list of `Trajectory`.

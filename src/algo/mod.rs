@@ -17,4 +17,5 @@
 // TODO(WIREUP): algorithm modules land with their own slices; the final
 // reference list is restored in the wire-up.
 pub mod t2vec;
+pub mod tale_forest;
 pub mod trajcl;
